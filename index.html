@@ -254,6 +254,53 @@ select option { background: var(--surface); color: var(--text); }
   .sidebar { position: static; height: auto; }
   .notebook-panel { height: 400px; }
 }
+/* GAMES LAB */
+.games-view { padding-bottom: 40px; }
+.games-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.games-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+
+.game-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  transition: border-color 0.2s, transform 0.15s;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.game-card:hover { border-color: var(--primary-border); transform: translateY(-1px); }
+
+.game-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.game-card-title { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.game-card-pos { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-top: 3px; }
+.game-card-badges { display: flex; gap: 6px; flex-shrink: 0; }
+
+.game-duration {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 14px;
+  font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--primary);
+  letter-spacing: 0.05em;
+}
+.game-duration span { font-family: var(--font-body); font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.game-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.game-role { border-radius: var(--radius-sm); padding: 12px 14px; }
+.game-role-top { background: rgba(79,156,249,0.08); border: 1px solid rgba(79,156,249,0.2); }
+.game-role-bottom { background: rgba(200,169,107,0.08); border: 1px solid rgba(200,169,107,0.2); }
+.game-role-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+.game-role-top .game-role-label { color: var(--accent); }
+.game-role-bottom .game-role-label { color: var(--primary); }
+.game-role-text { font-size: 13px; font-weight: 500; line-height: 1.4; }
+
+.game-cue { background: var(--surface2); border-left: 3px solid var(--primary-border); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 12px; }
+.game-cue-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 3px; }
+.game-cue-text { font-size: 12px; color: var(--muted2); font-style: italic; }
+
+.game-scaling { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.game-scale-item { background: var(--surface2); border-radius: var(--radius-sm); padding: 8px 10px; }
+.game-scale-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 3px; }
+.game-scale-text { font-size: 11px; color: var(--muted2); line-height: 1.4; }
+
+.games-count { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
 @media (max-width: 768px) {
   .hero { grid-template-columns: 1fr; }
   .stats-grid { flex-wrap: wrap; }
@@ -286,6 +333,7 @@ select option { background: var(--surface); color: var(--text); }
         <button class="btn track-btn-top" data-track="Instruction" onclick="setTrack('Instruction')">📘 Instruction</button>
         <button class="btn track-btn-top" data-track="Live" onclick="setTrack('Live')">🎥 Live</button>
         <button class="btn track-btn-top" data-track="Competition" onclick="setTrack('Competition')">🏆 Competition</button>
+        <button class="btn btn-ghost" id="gamesBtn">🎯 Games</button>
         <button class="btn btn-ghost" id="favBtn">☆ Favs</button>
         <button class="btn btn-ghost" id="themeBtn">☀</button>
       </div>
@@ -350,6 +398,18 @@ select option { background: var(--surface); color: var(--text); }
           </div>
         </div>
       </aside>
+    </div>
+
+    <!-- GAMES VIEW -->
+    <div id="gamesView" style="display:none" class="games-view">
+      <div class="games-header">
+        <div class="games-count" id="gamesCount">0 games</div>
+        <div class="games-filters">
+          <select id="gamesLevel"><option value="">All Levels</option><option>White</option><option>Blue</option><option>Advanced</option></select>
+          <select id="gamesPos"><option value="">All Positions</option></select>
+        </div>
+      </div>
+      <div class="games-grid" id="gamesGrid"></div>
     </div>
 
   </div>
@@ -572,6 +632,268 @@ function setTrack(t) {
   });
   render();
 }
+
+render();
+
+// ─── GAMES LAB ───────────────────────────────────────────────
+const GAMES = [
+  // CLOSED GUARD
+  { name: "Triangle Hunt", position: "Closed Guard", level: "Blue", duration: "3 min",
+    top: "Posture up, break the guard, pass to side control",
+    bottom: "Lock a triangle from closed guard before the pass",
+    cue: "Angle the hip before closing the lock",
+    beginner: "Top stays in combat base — no standing allowed",
+    advanced: "Bottom must chain: triangle → armbar → omoplata" },
+  { name: "Sweep Factory", position: "Closed Guard", level: "White", duration: "2 min",
+    top: "Maintain posture and base, avoid the sweep",
+    bottom: "Execute any sweep to reach top position",
+    cue: "Break posture before committing to the sweep",
+    beginner: "Bottom chooses one sweep only before starting",
+    advanced: "Top can stand and attempt to pass" },
+  { name: "Submission Gauntlet", position: "Closed Guard", level: "Advanced", duration: "3 min",
+    top: "Defend all submissions and pass the guard",
+    bottom: "Submit before being passed — chain attacks",
+    cue: "Create a reaction before converting to the next attack",
+    beginner: "Bottom attacks triangle or armbar only",
+    advanced: "Bottom must verbally call the next attack before switching" },
+
+  // MOUNT
+  { name: "Mount Maintenance", position: "Mount", level: "Blue", duration: "2 min",
+    top: "Maintain mount, advance to high mount",
+    bottom: "Recover half guard or full guard",
+    cue: "Low mount for control, high mount to attack",
+    beginner: "No submissions — control only. Escaper wins with any knee inside",
+    advanced: "Top must attempt a submission — passive control doesn't count after 60 sec" },
+  { name: "S-Mount Chase", position: "Mount", level: "Advanced", duration: "90 sec",
+    top: "Achieve S-mount and attack the far arm",
+    bottom: "Prevent S-mount entry and escape before armbar is locked",
+    cue: "Establish S before extending the arm",
+    beginner: "Top starts in S-mount — drill the finish only",
+    advanced: "Bottom can give up the arm to reverse if the escape is clean" },
+
+  // BACK CONTROL
+  { name: "Seatbelt Squeeze", position: "Back Control", level: "Blue", duration: "90 sec",
+    top: "Finish the RNC — get the chin, then squeeze",
+    bottom: "Face the attacker and clear both hooks",
+    cue: "Always escape toward the bottom hook",
+    beginner: "No RNC — top maintains only, bottom works posture",
+    advanced: "Top must transition between RNC and arm triangle based on bottom's defense" },
+  { name: "Hook Battle", position: "Back Control", level: "Advanced", duration: "2 min",
+    top: "Maintain both hooks and submit",
+    bottom: "Remove one hook and fully escape",
+    cue: "Never lose both hooks at the same time",
+    beginner: "One hook only — top maintains, bottom removes it",
+    advanced: "Bottom must reach a dominant position (not just neutral) to win" },
+
+  // SIDE CONTROL
+  { name: "Pressure Cooker", position: "Side Control", level: "Blue", duration: "2 min",
+    top: "Advance to mount or take the back",
+    bottom: "Recover full guard before top transitions",
+    cue: "Frames first, then create hip space",
+    beginner: "Top maintains only — no transitions. Bottom works frames",
+    advanced: "Bottom must submit on the way out — escape only doesn't count" },
+  { name: "North-South Transit", position: "Side Control", level: "Advanced", duration: "90 sec",
+    top: "Slide to north-south and thread the arm for the choke",
+    bottom: "Block the arm thread and recover side control escape position",
+    cue: "Hip angle is critical — square up before threading",
+    beginner: "Top drills the slide only — no choke finish",
+    advanced: "Bottom can give up the position to counter with a kimura on the sliding arm" },
+
+  // HALF GUARD
+  { name: "Underhook War", position: "Half Guard", level: "Blue", duration: "2 min",
+    top: "Flatten bottom and pass to side control",
+    bottom: "Win the underhook and sweep or take the back",
+    cue: "Get the underhook before anything else",
+    beginner: "Start with underhook pre-established — work from there",
+    advanced: "Top must flatten AND submit before 2 min — passing alone doesn't count" },
+  { name: "Deep Half Dive", position: "Half Guard", level: "Advanced", duration: "2 min",
+    top: "Stop the dive under and pass to side control",
+    bottom: "Enter deep half and execute the back-lift sweep",
+    cue: "Head position determines the direction of the sweep",
+    beginner: "Bottom drills the entry only — no pressure from top",
+    advanced: "Top can attempt to submit during the scramble" },
+  { name: "Dog Fight Scramble", position: "Half Guard", level: "Blue", duration: "90 sec",
+    top: "Win the dog fight and take top position",
+    bottom: "Take the back or complete the single-leg from dog fight",
+    cue: "Head inside for takedown, head outside for back take",
+    beginner: "Start in dog fight position — no entry needed",
+    advanced: "First clean position wins — 3 sec hold required" },
+
+  // GUARD PASSING
+  { name: "Open Guard Gauntlet", position: "Guard Passing", level: "Blue", duration: "3 min",
+    top: "Pass to side control and hold for 3 seconds",
+    bottom: "Sweep, submit, or maintain guard",
+    cue: "Control the hips before committing to the pass",
+    beginner: "Top chooses one pass only before starting",
+    advanced: "Top must chain two passes — if first is blocked, immediately transition" },
+  { name: "Torreando Sprint", position: "Guard Passing", level: "Blue", duration: "2 min",
+    top: "Execute torreando and reach side control",
+    bottom: "Recover guard or convert to butterfly on the redirect",
+    cue: "Push both knees to one side — don't split them",
+    beginner: "Bottom stays seated, no active pursuit",
+    advanced: "Bottom can grab ankles to attempt immediate counter-sweep" },
+  { name: "Knee Slice Race", position: "Guard Passing", level: "Blue", duration: "2 min",
+    top: "Complete knee slice to side control",
+    bottom: "Frame the knee out and recover guard",
+    cue: "Chest pressure down, hip drives through",
+    beginner: "Bottom cannot hip escape — frames only",
+    advanced: "Bottom can leg lock if hip escapes into an entanglement" },
+
+  // LEG LOCKS
+  { name: "Ashi Entry Game", position: "Leg Locks", level: "Advanced", duration: "2 min",
+    top: "Establish ashi garami or 411 and hold for 3 seconds",
+    bottom: "Disengage, stand, and reset before lock is established",
+    cue: "Chest-to-shin before sitting to the entanglement",
+    beginner: "DO NOT run for white/blue belts — entry drilling only",
+    advanced: "Bottom must reach a passing position (not just stand) to win" },
+  { name: "Heel Hook Defense", position: "Leg Locks", level: "Advanced", duration: "90 sec",
+    top: "Finish from saddle position — outside heel preferred",
+    bottom: "Clear the heel and exit the entanglement cleanly",
+    cue: "Toes to the ceiling — never let the heel load",
+    beginner: "Advanced only — ⚠️ tap early, never resist",
+    advanced: "Bottom must counter-entangle, not just disengage" },
+
+  // TAKEDOWNS
+  { name: "Shot Defense", position: "Takedowns", level: "White", duration: "2 min",
+    top: "Complete a double leg or single leg takedown",
+    bottom: "Sprawl, redirect, and return to feet",
+    cue: "Hips back on the sprawl — don't just drop the weight",
+    beginner: "Top shoots from standing — no collar tie setups",
+    advanced: "Bottom must reach a front headlock or turtle after the sprawl" },
+  { name: "Arm Drag Race", position: "Takedowns", level: "Blue", duration: "2 min",
+    top: "Complete a takedown off the arm drag",
+    bottom: "Counter the drag and return to neutral or clinch",
+    cue: "Pull the arm past your hip, not just across",
+    beginner: "Top drills the drag entry — no explosive finish",
+    advanced: "Bottom can counter-drag and take the back if reaction is clean" },
+  { name: "Clinch Control", position: "Takedowns", level: "Blue", duration: "2 min",
+    top: "Win underhook battle and execute inside trip or body lock takedown",
+    bottom: "Defend underhooks and return to square stance",
+    cue: "Chest-to-chest before committing to the trip",
+    beginner: "No throws — trips and body locks only",
+    advanced: "Both can score — first clean takedown wins the round" },
+
+  // TURTLE
+  { name: "Back Attack from Turtle", position: "Turtle", level: "Blue", duration: "90 sec",
+    top: "Establish seatbelt and both hooks",
+    bottom: "Recover guard or stand before both hooks land",
+    cue: "Seatbelt before rolling — never roll without the grip",
+    beginner: "Top drills the roll to back only — no submission",
+    advanced: "Bottom can darce the rolling arm as a counter" },
+  { name: "Darce Trap", position: "Turtle", level: "Advanced", duration: "90 sec",
+    top: "Lock the D'Arce from turtle before bottom recovers",
+    bottom: "Pop the head and recover to guard or standing",
+    cue: "Get the angle before locking — don't force from square",
+    beginner: "Drill entry only — no finish pressure",
+    advanced: "Bottom can counter with an anaconda if top arm is exposed" },
+
+  // GUILLOTINE
+  { name: "Guillotine or Pass", position: "Guillotine", level: "Blue", duration: "2 min",
+    top: "Pass the guard after defending the guillotine attempt",
+    bottom: "Lock a high-elbow guillotine from guard pull or clinch",
+    cue: "High elbow — if the elbow drops, the choke is gone",
+    beginner: "Bottom starts with guillotine grip already established",
+    advanced: "Top can Von Flue if bottom stays with the arm-in" },
+
+  // BUTTERFLY GUARD
+  { name: "Butterfly Lift", position: "Open Guard", level: "Blue", duration: "2 min",
+    top: "Flatten and pass butterfly guard to side control",
+    bottom: "Elevate and sweep to top position",
+    cue: "Elevate the hip, not just the legs",
+    beginner: "Top stays seated — no standing passes",
+    advanced: "Bottom must chain sweep → back take if first sweep is blocked" },
+  { name: "Back Take Hunt", position: "Open Guard", level: "Advanced", duration: "2 min",
+    top: "Block the back take and establish top control",
+    bottom: "Take the back from butterfly using arm drag or back roll",
+    cue: "Chest-to-back before inserting the hooks",
+    beginner: "Bottom uses arm drag only — no back roll",
+    advanced: "Top can counter with leg lock if bottom over-commits to the roll" },
+
+  // FUNDAMENTALS
+  { name: "Hip Escape Survival", position: "Fundamentals", level: "White", duration: "2 min",
+    top: "Maintain chest-to-chest pressure and advance position",
+    bottom: "Create space with hip escapes and frames, recover guard",
+    cue: "Frame on the hip and shoulder — never the face",
+    beginner: "Top holds side control only — no transitions",
+    advanced: "Top must submit — maintaining pressure alone doesn't count" },
+];
+
+// Games state
+let showGames = false;
+let gamesLevelFilter = '';
+let gamesPosFilter = '';
+
+// Populate games position filter
+const gamesPosEl = document.getElementById('gamesPos');
+const gamePositions = [...new Set(GAMES.map(g => g.position))].sort();
+gamePositions.forEach(p => {
+  const o = document.createElement('option');
+  o.value = p; o.textContent = p;
+  gamesPosEl.appendChild(o);
+});
+
+function levelBadgeClass(level) {
+  return level === 'White' ? 'badge-white' : level === 'Blue' ? 'badge-blue' : 'badge-adv';
+}
+
+function renderGames() {
+  let items = [...GAMES];
+  if (gamesLevelFilter) items = items.filter(g => g.level === gamesLevelFilter);
+  if (gamesPosFilter) items = items.filter(g => g.position === gamesPosFilter);
+  document.getElementById('gamesCount').textContent = `${items.length} game${items.length !== 1 ? 's' : ''}`;
+  document.getElementById('gamesGrid').innerHTML = items.map(g => `
+    <div class="game-card">
+      <div class="game-card-header">
+        <div>
+          <div class="game-card-title">${g.name}</div>
+          <div class="game-card-pos">${g.position}</div>
+        </div>
+        <div class="game-card-badges">
+          <span class="badge ${levelBadgeClass(g.level)}">${g.level}</span>
+        </div>
+      </div>
+      <div class="game-duration">⏱ ${g.duration} <span>per side</span></div>
+      <div class="game-roles">
+        <div class="game-role game-role-top">
+          <div class="game-role-label">▲ Top</div>
+          <div class="game-role-text">${g.top}</div>
+        </div>
+        <div class="game-role game-role-bottom">
+          <div class="game-role-label">▼ Bottom</div>
+          <div class="game-role-text">${g.bottom}</div>
+        </div>
+      </div>
+      <div class="game-cue">
+        <div class="game-cue-label">Coach Cue</div>
+        <div class="game-cue-text">${g.cue}</div>
+      </div>
+      <div class="game-scaling">
+        <div class="game-scale-item">
+          <div class="game-scale-label">⬇ Beginner</div>
+          <div class="game-scale-text">${g.beginner}</div>
+        </div>
+        <div class="game-scale-item">
+          <div class="game-scale-label">⬆ Advanced</div>
+          <div class="game-scale-text">${g.advanced}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('gamesBtn').addEventListener('click', () => {
+  showGames = !showGames;
+  document.getElementById('gamesView').style.display = showGames ? 'block' : 'none';
+  document.querySelector('.hero').style.display = showGames ? 'none' : 'grid';
+  document.querySelector('.position-pills').style.display = showGames ? 'none' : 'flex';
+  document.querySelector('.filters').style.display = showGames ? 'none' : 'grid';
+  document.querySelector('.main-layout').style.display = showGames ? 'none' : 'grid';
+  document.getElementById('gamesBtn').classList.toggle('active', showGames);
+  if (showGames) renderGames();
+});
+
+document.getElementById('gamesLevel').addEventListener('change', e => { gamesLevelFilter = e.target.value; renderGames(); });
+document.getElementById('gamesPos').addEventListener('change', e => { gamesPosFilter = e.target.value; renderGames(); });
 
 render();
 </script>
