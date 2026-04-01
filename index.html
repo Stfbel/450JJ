@@ -301,6 +301,12 @@ select option { background: var(--surface); color: var(--text); }
 
 .games-count { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
 
+.game-videos { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.game-video-link { display: flex; flex-direction: column; gap: 2px; text-decoration: none; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); transition: border-color 0.15s; }
+.game-video-link:hover { border-color: var(--primary-border); }
+.game-video-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.game-video-meta { font-size: 11px; color: var(--muted); }
+
 @media (max-width: 768px) {
   .hero { grid-template-columns: 1fr; }
   .stats-grid { flex-wrap: wrap; }
@@ -638,19 +644,19 @@ render();
 // ─── GAMES LAB ───────────────────────────────────────────────
 const GAMES = [
   // CLOSED GUARD
-  { name: "Triangle Hunt", position: "Closed Guard", level: "Blue", duration: "3 min",
+  { name: "Triangle Hunt", position: "Closed Guard", technique: "Triangle Choke", level: "Blue", duration: "3 min",
     top: "Posture up, break the guard, pass to side control",
     bottom: "Lock a triangle from closed guard before the pass",
     cue: "Angle the hip before closing the lock",
     beginner: "Top stays in combat base — no standing allowed",
     advanced: "Bottom must chain: triangle → armbar → omoplata" },
-  { name: "Sweep Factory", position: "Closed Guard", level: "White", duration: "2 min",
+  { name: "Sweep Factory", position: "Closed Guard", technique: "Closed Guard Sweeps", level: "White", duration: "2 min",
     top: "Maintain posture and base, avoid the sweep",
     bottom: "Execute any sweep to reach top position",
     cue: "Break posture before committing to the sweep",
     beginner: "Bottom chooses one sweep only before starting",
     advanced: "Top can stand and attempt to pass" },
-  { name: "Submission Gauntlet", position: "Closed Guard", level: "Advanced", duration: "3 min",
+  { name: "Submission Gauntlet", position: "Closed Guard", technique: "Closed Guard Control", level: "Advanced", duration: "3 min",
     top: "Defend all submissions and pass the guard",
     bottom: "Submit before being passed — chain attacks",
     cue: "Create a reaction before converting to the next attack",
@@ -658,13 +664,13 @@ const GAMES = [
     advanced: "Bottom must verbally call the next attack before switching" },
 
   // MOUNT
-  { name: "Mount Maintenance", position: "Mount", level: "Blue", duration: "2 min",
+  { name: "Mount Maintenance", position: "Mount", technique: "Mount Mechanics", level: "Blue", duration: "2 min",
     top: "Maintain mount, advance to high mount",
     bottom: "Recover half guard or full guard",
     cue: "Low mount for control, high mount to attack",
     beginner: "No submissions — control only. Escaper wins with any knee inside",
     advanced: "Top must attempt a submission — passive control doesn't count after 60 sec" },
-  { name: "S-Mount Chase", position: "Mount", level: "Advanced", duration: "90 sec",
+  { name: "S-Mount Chase", position: "Mount", technique: "S-Mount Armbar", level: "Advanced", duration: "90 sec",
     top: "Achieve S-mount and attack the far arm",
     bottom: "Prevent S-mount entry and escape before armbar is locked",
     cue: "Establish S before extending the arm",
@@ -672,13 +678,13 @@ const GAMES = [
     advanced: "Bottom can give up the arm to reverse if the escape is clean" },
 
   // BACK CONTROL
-  { name: "Seatbelt Squeeze", position: "Back Control", level: "Blue", duration: "90 sec",
+  { name: "Seatbelt Squeeze", position: "Back Control", technique: "Rear Naked Choke", level: "Blue", duration: "90 sec",
     top: "Finish the RNC — get the chin, then squeeze",
     bottom: "Face the attacker and clear both hooks",
     cue: "Always escape toward the bottom hook",
     beginner: "No RNC — top maintains only, bottom works posture",
     advanced: "Top must transition between RNC and arm triangle based on bottom's defense" },
-  { name: "Hook Battle", position: "Back Control", level: "Advanced", duration: "2 min",
+  { name: "Hook Battle", position: "Back Control", technique: "Back Control", level: "Advanced", duration: "2 min",
     top: "Maintain both hooks and submit",
     bottom: "Remove one hook and fully escape",
     cue: "Never lose both hooks at the same time",
@@ -686,13 +692,13 @@ const GAMES = [
     advanced: "Bottom must reach a dominant position (not just neutral) to win" },
 
   // SIDE CONTROL
-  { name: "Pressure Cooker", position: "Side Control", level: "Blue", duration: "2 min",
+  { name: "Pressure Cooker", position: "Side Control", technique: "Side Control Pressure", level: "Blue", duration: "2 min",
     top: "Advance to mount or take the back",
     bottom: "Recover full guard before top transitions",
     cue: "Frames first, then create hip space",
     beginner: "Top maintains only — no transitions. Bottom works frames",
     advanced: "Bottom must submit on the way out — escape only doesn't count" },
-  { name: "North-South Transit", position: "Side Control", level: "Advanced", duration: "90 sec",
+  { name: "North-South Transit", position: "Side Control", technique: "North-South Choke", level: "Advanced", duration: "90 sec",
     top: "Slide to north-south and thread the arm for the choke",
     bottom: "Block the arm thread and recover side control escape position",
     cue: "Hip angle is critical — square up before threading",
@@ -700,19 +706,19 @@ const GAMES = [
     advanced: "Bottom can give up the position to counter with a kimura on the sliding arm" },
 
   // HALF GUARD
-  { name: "Underhook War", position: "Half Guard", level: "Blue", duration: "2 min",
+  { name: "Underhook War", position: "Half Guard", technique: "Modern Half Guard", level: "Blue", duration: "2 min",
     top: "Flatten bottom and pass to side control",
     bottom: "Win the underhook and sweep or take the back",
     cue: "Get the underhook before anything else",
     beginner: "Start with underhook pre-established — work from there",
     advanced: "Top must flatten AND submit before 2 min — passing alone doesn't count" },
-  { name: "Deep Half Dive", position: "Half Guard", level: "Advanced", duration: "2 min",
+  { name: "Deep Half Dive", position: "Half Guard", technique: "Deep Half Sweep", level: "Advanced", duration: "2 min",
     top: "Stop the dive under and pass to side control",
     bottom: "Enter deep half and execute the back-lift sweep",
     cue: "Head position determines the direction of the sweep",
     beginner: "Bottom drills the entry only — no pressure from top",
     advanced: "Top can attempt to submit during the scramble" },
-  { name: "Dog Fight Scramble", position: "Half Guard", level: "Blue", duration: "90 sec",
+  { name: "Dog Fight Scramble", position: "Half Guard", technique: "Dog Fight", level: "Blue", duration: "90 sec",
     top: "Win the dog fight and take top position",
     bottom: "Take the back or complete the single-leg from dog fight",
     cue: "Head inside for takedown, head outside for back take",
@@ -720,19 +726,19 @@ const GAMES = [
     advanced: "First clean position wins — 3 sec hold required" },
 
   // GUARD PASSING
-  { name: "Open Guard Gauntlet", position: "Guard Passing", level: "Blue", duration: "3 min",
+  { name: "Open Guard Gauntlet", position: "Guard Passing", technique: "Passing System", level: "Blue", duration: "3 min",
     top: "Pass to side control and hold for 3 seconds",
     bottom: "Sweep, submit, or maintain guard",
     cue: "Control the hips before committing to the pass",
     beginner: "Top chooses one pass only before starting",
     advanced: "Top must chain two passes — if first is blocked, immediately transition" },
-  { name: "Torreando Sprint", position: "Guard Passing", level: "Blue", duration: "2 min",
+  { name: "Torreando Sprint", position: "Guard Passing", technique: "Torreando Pass", level: "Blue", duration: "2 min",
     top: "Execute torreando and reach side control",
     bottom: "Recover guard or convert to butterfly on the redirect",
     cue: "Push both knees to one side — don't split them",
     beginner: "Bottom stays seated, no active pursuit",
     advanced: "Bottom can grab ankles to attempt immediate counter-sweep" },
-  { name: "Knee Slice Race", position: "Guard Passing", level: "Blue", duration: "2 min",
+  { name: "Knee Slice Race", position: "Guard Passing", technique: "Knee Slice", level: "Blue", duration: "2 min",
     top: "Complete knee slice to side control",
     bottom: "Frame the knee out and recover guard",
     cue: "Chest pressure down, hip drives through",
@@ -740,13 +746,13 @@ const GAMES = [
     advanced: "Bottom can leg lock if hip escapes into an entanglement" },
 
   // LEG LOCKS
-  { name: "Ashi Entry Game", position: "Leg Locks", level: "Advanced", duration: "2 min",
+  { name: "Ashi Entry Game", position: "Leg Locks", technique: "Ashi Garami", level: "Advanced", duration: "2 min",
     top: "Establish ashi garami or 411 and hold for 3 seconds",
     bottom: "Disengage, stand, and reset before lock is established",
     cue: "Chest-to-shin before sitting to the entanglement",
     beginner: "DO NOT run for white/blue belts — entry drilling only",
     advanced: "Bottom must reach a passing position (not just stand) to win" },
-  { name: "Heel Hook Defense", position: "Leg Locks", level: "Advanced", duration: "90 sec",
+  { name: "Heel Hook Defense", position: "Leg Locks", technique: "Heel Hook Defense", level: "Advanced", duration: "90 sec",
     top: "Finish from saddle position — outside heel preferred",
     bottom: "Clear the heel and exit the entanglement cleanly",
     cue: "Toes to the ceiling — never let the heel load",
@@ -754,19 +760,19 @@ const GAMES = [
     advanced: "Bottom must counter-entangle, not just disengage" },
 
   // TAKEDOWNS
-  { name: "Shot Defense", position: "Takedowns", level: "White", duration: "2 min",
+  { name: "Shot Defense", position: "Takedowns", technique: "Double Leg", level: "White", duration: "2 min",
     top: "Complete a double leg or single leg takedown",
     bottom: "Sprawl, redirect, and return to feet",
     cue: "Hips back on the sprawl — don't just drop the weight",
     beginner: "Top shoots from standing — no collar tie setups",
     advanced: "Bottom must reach a front headlock or turtle after the sprawl" },
-  { name: "Arm Drag Race", position: "Takedowns", level: "Blue", duration: "2 min",
+  { name: "Arm Drag Race", position: "Takedowns", technique: "Arm Drag", level: "Blue", duration: "2 min",
     top: "Complete a takedown off the arm drag",
     bottom: "Counter the drag and return to neutral or clinch",
     cue: "Pull the arm past your hip, not just across",
     beginner: "Top drills the drag entry — no explosive finish",
     advanced: "Bottom can counter-drag and take the back if reaction is clean" },
-  { name: "Clinch Control", position: "Takedowns", level: "Blue", duration: "2 min",
+  { name: "Clinch Control", position: "Takedowns", technique: "Clinch Work", level: "Blue", duration: "2 min",
     top: "Win underhook battle and execute inside trip or body lock takedown",
     bottom: "Defend underhooks and return to square stance",
     cue: "Chest-to-chest before committing to the trip",
@@ -774,13 +780,13 @@ const GAMES = [
     advanced: "Both can score — first clean takedown wins the round" },
 
   // TURTLE
-  { name: "Back Attack from Turtle", position: "Turtle", level: "Blue", duration: "90 sec",
+  { name: "Back Attack from Turtle", position: "Turtle", technique: "Back Take Turtle", level: "Blue", duration: "90 sec",
     top: "Establish seatbelt and both hooks",
     bottom: "Recover guard or stand before both hooks land",
     cue: "Seatbelt before rolling — never roll without the grip",
     beginner: "Top drills the roll to back only — no submission",
     advanced: "Bottom can darce the rolling arm as a counter" },
-  { name: "Darce Trap", position: "Turtle", level: "Advanced", duration: "90 sec",
+  { name: "Darce Trap", position: "Turtle", technique: "D'Arce from Turtle", level: "Advanced", duration: "90 sec",
     top: "Lock the D'Arce from turtle before bottom recovers",
     bottom: "Pop the head and recover to guard or standing",
     cue: "Get the angle before locking — don't force from square",
@@ -788,21 +794,21 @@ const GAMES = [
     advanced: "Bottom can counter with an anaconda if top arm is exposed" },
 
   // GUILLOTINE
-  { name: "Guillotine or Pass", position: "Guillotine", level: "Blue", duration: "2 min",
+  { name: "Guillotine or Pass", position: "Guillotine", technique: "High Elbow Guillotine", level: "Blue", duration: "2 min",
     top: "Pass the guard after defending the guillotine attempt",
     bottom: "Lock a high-elbow guillotine from guard pull or clinch",
     cue: "High elbow — if the elbow drops, the choke is gone",
     beginner: "Bottom starts with guillotine grip already established",
     advanced: "Top can Von Flue if bottom stays with the arm-in" },
 
-  // BUTTERFLY GUARD
-  { name: "Butterfly Lift", position: "Open Guard", level: "Blue", duration: "2 min",
+  // BUTTERFLY / OPEN GUARD
+  { name: "Butterfly Lift", position: "Open Guard", technique: "Butterfly Sweep", level: "Blue", duration: "2 min",
     top: "Flatten and pass butterfly guard to side control",
     bottom: "Elevate and sweep to top position",
     cue: "Elevate the hip, not just the legs",
     beginner: "Top stays seated — no standing passes",
     advanced: "Bottom must chain sweep → back take if first sweep is blocked" },
-  { name: "Back Take Hunt", position: "Open Guard", level: "Advanced", duration: "2 min",
+  { name: "Back Take Hunt", position: "Open Guard", technique: "Butterfly Back Take", level: "Advanced", duration: "2 min",
     top: "Block the back take and establish top control",
     bottom: "Take the back from butterfly using arm drag or back roll",
     cue: "Chest-to-back before inserting the hooks",
@@ -810,7 +816,7 @@ const GAMES = [
     advanced: "Top can counter with leg lock if bottom over-commits to the roll" },
 
   // FUNDAMENTALS
-  { name: "Hip Escape Survival", position: "Fundamentals", level: "White", duration: "2 min",
+  { name: "Hip Escape Survival", position: "Fundamentals", technique: "Hip Escape", level: "White", duration: "2 min",
     top: "Maintain chest-to-chest pressure and advance position",
     bottom: "Create space with hip escapes and frames, recover guard",
     cue: "Frame on the hip and shoulder — never the face",
@@ -841,12 +847,25 @@ function renderGames() {
   if (gamesLevelFilter) items = items.filter(g => g.level === gamesLevelFilter);
   if (gamesPosFilter) items = items.filter(g => g.position === gamesPosFilter);
   document.getElementById('gamesCount').textContent = `${items.length} game${items.length !== 1 ? 's' : ''}`;
-  document.getElementById('gamesGrid').innerHTML = items.map(g => `
+  document.getElementById('gamesGrid').innerHTML = items.map(g => {
+    const entry = DATA.find(d => d.position === g.position && d.technique === g.technique);
+    const vids = entry ? [...entry.videos].sort((a,b) => (b.stars||0)-(a.stars||0)).slice(0,3) : [];
+    const videosHtml = vids.length ? `
+      <div class="game-videos">
+        <div class="game-cue-label" style="margin-bottom:6px">Related Videos</div>
+        ${vids.map(v => `
+          <a href="${v.url}" target="_blank" rel="noopener" class="game-video-link">
+            <span class="game-video-title">${v.title}</span>
+            <span class="game-video-meta">${v.creator} · ${'★'.repeat(v.stars)}</span>
+          </a>
+        `).join('')}
+      </div>` : '';
+    return `
     <div class="game-card">
       <div class="game-card-header">
         <div>
           <div class="game-card-title">${g.name}</div>
-          <div class="game-card-pos">${g.position}</div>
+          <div class="game-card-pos">${g.position} · ${g.technique}</div>
         </div>
         <div class="game-card-badges">
           <span class="badge ${levelBadgeClass(g.level)}">${g.level}</span>
@@ -877,8 +896,9 @@ function renderGames() {
           <div class="game-scale-text">${g.advanced}</div>
         </div>
       </div>
-    </div>
-  `).join('');
+      ${videosHtml}
+    </div>`;
+  }).join('');
 }
 
 document.getElementById('gamesBtn').addEventListener('click', () => {
