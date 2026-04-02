@@ -5,8 +5,8 @@ import { getVideos, addVideo, deleteVideo, isAdminActive } from '../utils/librar
 import { LibraryVideo, VideoType, SkillLevel, GiFormat } from '../data/library';
 import { getYouTubeThumbnail, getYouTubeVideoId } from '../utils/youtube';
 import { techniques } from '../data/techniques';
-import { getSyncedVideos, getSyncedKey, getApiKey, searchYouTube, YouTubeSearchResult } from '../utils/youtubeApi';
-import { Technique } from '../data/techniques';
+import { getSyncedVideos, getSyncedKey, YouTubeSearchResult } from '../utils/youtubeApi';
+import { searchYouTubeViaBackend } from '../utils/backendApi';
 
 // ─── Unified video type for display ──────────────────────────────────────────
 
@@ -72,20 +72,14 @@ function YouTubeSearchPanel({
   const [results, setResults] = useState<YouTubeSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const apiKey = getApiKey();
-
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    if (!apiKey) {
-      setError('Add your YouTube API key in the Sync panel first (Techniques page).');
-      return;
-    }
     setLoading(true);
     setError('');
     setResults([]);
     try {
-      const res = await searchYouTube(query.trim(), apiKey, 20);
+      const res = await searchYouTubeViaBackend(query.trim(), 20);
       setResults(res);
       if (res.length === 0) setError('No results found.');
     } catch (err: any) {
@@ -100,12 +94,7 @@ function YouTubeSearchPanel({
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-red-500/5">
         <Youtube className="w-4 h-4 text-red-500 shrink-0" />
         <span className="text-sm font-bold">Search YouTube & Add to Library</span>
-        {!apiKey && (
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-amber-500 font-medium">
-            <Key className="w-3 h-3" /> API key required (Sync panel)
-          </span>
-        )}
-      </div>
+        </div>
       <div className="p-4 space-y-3">
         <form onSubmit={handleSearch} className="flex gap-2">
           <input

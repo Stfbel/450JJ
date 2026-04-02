@@ -4,29 +4,25 @@ import cors from 'cors';
 import { google } from 'googleapis';
 
 const app = express();
-app.use(express.json());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-}));
+app.use(express.json({ limit: '10mb' }));
+app.use(cors({ origin: '*' }));
 
-// ─── Google OAuth2 setup ───────────────────────────────────────────────────────
+const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
+const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const YT_KEY = process.env.YOUTUBE_API_KEY;
+const CLAUDE_KEY = process.env.CLAUDE_API_KEY;
+
+// ─── Google OAuth2 (kept for future transcript feature) ───────────────────────
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
   process.env.GOOGLE_REDIRECT_URI
 );
-
-// Restore saved refresh token on startup
 if (process.env.GOOGLE_REFRESH_TOKEN) {
   oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
 }
 
-const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
-
-// ─── Auth routes ───────────────────────────────────────────────────────────────
-
-// Step 1: redirect user to Google login
 app.get('/auth/google', (req, res) => {
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -36,195 +32,17 @@ app.get('/auth/google', (req, res) => {
   res.redirect(url);
 });
 
-// Step 2: Google redirects back here with a code
 app.get('/auth/callback', async (req, res) => {
   const { code } = req.query;
   if (!code) return res.status(400).send('Missing code');
-
   try {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-
-    // Show the refresh token so you can save it in Railway env vars
-    res.send(`
-      <h2>✅ Auth successful!</h2>
-      <p>Copy this refresh token into Railway as <code>GOOGLE_REFRESH_TOKEN</code>:</p>
-      <textarea rows="3" style="width:100%;font-family:monospace">${tokens.refresh_token || '(already set — check logs)'}</textarea>
-      <p>Once saved in Railway, you can close this page.</p>
-    `);
-
+    res.send(`<h2>✅ Auth successful!</h2><p>Refresh token:</p><textarea rows="3" style="width:100%;font-family:monospace">${tokens.refresh_token}</textarea>`);
     console.log('GOOGLE_REFRESH_TOKEN:', tokens.refresh_token);
   } catch (err) {
     res.status(500).send('Auth error: ' + err.message);
   }
-});
-
-// Auth status check
-app.get('/auth/status', (req, res) => {
-  const hasToken = !!process.env.GOOGLE_REFRESH_TOKEN ||
-    !!oauth2Client.credentials?.refresh_token;
-  res.json({ authenticated: hasToken });
-});
-
-// ─── Transcript route ──────────────────────────────────────────────────────────
-
-app.get('/api/transcript/:videoId', async (req, res) => {
-  const { videoId } = req.params;
-
-  try {
-    // List available caption tracks
-    const captionList = await youtube.captions.list({
-      part: ['snippet'],
-      videoId,
-    });
-
-    const tracks = captionList.data.items || [];
-    if (tracks.length === 0) {
-      return res.status(404).json({ error: 'No captions available for this video' });
-    }
-
-    // Prefer English track, fallback to first available
-    const track =
-      tracks.find(t => t.snippet?.language === 'en') ||
-      tracks.find(t => t.snippet?.language?.startsWith('en')) ||
-      tracks[0];
-
-    // Download the caption track as SRT
-    const captionDownload = await youtube.captions.download({
-      id: track.id,
-      tfmt: 'srt',
-    }, { responseType: 'text' });
-
-    const srt = captionDownload.data;
-
-    // Parse SRT into [{start, text}] array
-    const entries = parseSRT(srt);
-
-    res.json({
-      videoId,
-      language: track.snippet?.language,
-      trackName: track.snippet?.name,
-      entries,
-    });
-
-  } catch (err) {
-    console.error('Transcript error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ─── Analyze timestamp route ───────────────────────────────────────────────────
-
-app.post('/api/analyze-timestamp', async (req, res) => {
-  const { videoId, technique, position, claudeApiKey } = req.body;
-
-  if (!videoId || !technique || !position) {
-    return res.status(400).json({ error: 'Missing videoId, technique, or position' });
-  }
-
-  const apiKey = claudeApiKey || process.env.CLAUDE_API_KEY;
-  if (!apiKey) {
-    return res.status(400).json({ error: 'Missing Claude API key' });
-  }
-
-  try {
-    // 1. Get transcript
-    const transcriptRes = await fetch(`http://localhost:${PORT}/api/transcript/${videoId}`);
-    if (!transcriptRes.ok) {
-      const err = await transcriptRes.json();
-      return res.status(404).json({ error: err.error || 'Transcript unavailable' });
-    }
-    const { entries } = await transcriptRes.json();
-
-    // 2. Build chunked context for Claude
-    const chunks = buildChunks(entries, 30);
-    const formatted = chunks
-      .map(c => `[${toTimestamp(c.start)}] ${c.text.slice(0, 200)}`)
-      .join('\n');
-
-    // 3. Ask Claude
-    const prompt = `You are a No-Gi BJJ expert. Find the timestamp where "${technique}" (position: ${position}) starts being demonstrated.
-
-Transcript (format [MM:SS] text):
----
-${formatted.slice(0, 4000)}
----
-
-Rules:
-- Return the timestamp where the instructor begins teaching "${technique}"
-- If the whole video is about this from the start, return "0:00"
-- If not found, return "SKIP"
-- Respond with ONLY a timestamp like "3:45" or "SKIP"`;
-
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 64,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-
-    const claudeData = await claudeRes.json();
-    const text = claudeData.content?.[0]?.text?.trim() || 'SKIP';
-
-    if (text === 'SKIP' || !text.match(/\d+:\d+/)) {
-      return res.json({ videoId, timestamp: null, message: 'Technique not found in transcript' });
-    }
-
-    const match = text.match(/\d{1,2}:\d{2}(?::\d{2})?/);
-    const seconds = match ? toSeconds(match[0]) : null;
-
-    res.json({ videoId, technique, position, timestampStr: match?.[0], seconds });
-
-  } catch (err) {
-    console.error('Analyze error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ─── Batch analyze route ───────────────────────────────────────────────────────
-
-app.post('/api/analyze-timestamps-batch', async (req, res) => {
-  const { videos, claudeApiKey } = req.body;
-  // videos: [{ videoId, url, technique, position }]
-
-  if (!Array.isArray(videos) || videos.length === 0) {
-    return res.status(400).json({ error: 'Missing videos array' });
-  }
-
-  const results = {};
-  const errors = [];
-
-  for (const v of videos) {
-    try {
-      const r = await fetch(`http://localhost:${PORT}/api/analyze-timestamp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          videoId: v.videoId,
-          technique: v.technique,
-          position: v.position,
-          claudeApiKey,
-        }),
-      });
-      const data = await r.json();
-      if (data.seconds !== null && data.seconds !== undefined) {
-        results[v.url] = data.seconds;
-      }
-      // Small delay to avoid rate limits
-      await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (err) {
-      errors.push({ videoId: v.videoId, error: err.message });
-    }
-  }
-
-  res.json({ results, errors, found: Object.keys(results).length });
 });
 
 // ─── Health check ──────────────────────────────────────────────────────────────
@@ -232,55 +50,211 @@ app.post('/api/analyze-timestamps-batch', async (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    service: '450JJ Timestamp Backend',
-    authenticated: !!process.env.GOOGLE_REFRESH_TOKEN,
+    service: '450JJ Backend',
+    youtube: !!YT_KEY,
+    claude: !!CLAUDE_KEY,
   });
 });
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// ─── YouTube Search ────────────────────────────────────────────────────────────
 
-function parseSRT(srt) {
-  const entries = [];
-  const blocks = srt.trim().split(/\n\n+/);
-  for (const block of blocks) {
-    const lines = block.trim().split('\n');
-    if (lines.length < 3) continue;
-    const timeLine = lines[1];
-    const match = timeLine.match(/(\d{2}:\d{2}:\d{2},\d{3})/);
-    if (!match) continue;
-    const [h, m, s] = match[1].split(/[:,]/).map(Number);
-    const start = h * 3600 + m * 60 + s;
-    const text = lines.slice(2).join(' ').replace(/<[^>]+>/g, '').trim();
-    if (text) entries.push({ start, text });
+app.get('/api/youtube/search', async (req, res) => {
+  const { q, maxResults = 20 } = req.query;
+  if (!q) return res.status(400).json({ error: 'Missing query' });
+  if (!YT_KEY) return res.status(500).json({ error: 'YouTube API key not configured on server' });
+
+  try {
+    const params = new URLSearchParams({
+      part: 'snippet', q, type: 'video',
+      maxResults: String(maxResults),
+      relevanceLanguage: 'en',
+      key: YT_KEY,
+    });
+    const r = await fetch(`${YOUTUBE_API_BASE}/search?${params}`);
+    const data = await r.json();
+    if (!r.ok) return res.status(r.status).json({ error: data?.error?.message || `HTTP ${r.status}` });
+
+    const items = (data.items || [])
+      .filter(item => item.id?.videoId)
+      .map(item => ({
+        title: item.snippet.title,
+        url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+        videoId: item.id.videoId,
+        creator: item.snippet.channelTitle,
+        stars: 3,
+      }));
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  return entries;
-}
+});
 
-function buildChunks(entries, windowSeconds) {
-  const chunks = [];
-  let current = null;
-  for (const e of entries) {
-    if (!current || e.start - current.start >= windowSeconds) {
-      if (current) chunks.push(current);
-      current = { start: e.start, text: '' };
+// ─── YouTube Crawl (broad BJJ search) ─────────────────────────────────────────
+
+app.post('/api/youtube/crawl', async (req, res) => {
+  const { queries } = req.body;
+  if (!Array.isArray(queries) || queries.length === 0) {
+    return res.status(400).json({ error: 'Missing queries array' });
+  }
+  if (!YT_KEY) return res.status(500).json({ error: 'YouTube API key not configured on server' });
+
+  const seen = new Set();
+  const all = [];
+  const errors = [];
+
+  for (const query of queries) {
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet', q: query, type: 'video',
+        maxResults: '50', relevanceLanguage: 'en', key: YT_KEY,
+      });
+      const r = await fetch(`${YOUTUBE_API_BASE}/search?${params}`);
+      const data = await r.json();
+      if (!r.ok) {
+        errors.push({ query, error: data?.error?.message });
+        if (r.status === 400 || r.status === 403) break; // auth error — stop
+        continue;
+      }
+      for (const item of (data.items || [])) {
+        if (!item.id?.videoId || seen.has(item.id.videoId)) continue;
+        seen.add(item.id.videoId);
+        all.push({
+          title: item.snippet.title,
+          url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+          videoId: item.id.videoId,
+          creator: item.snippet.channelTitle,
+          stars: 3,
+        });
+      }
+    } catch (err) {
+      errors.push({ query, error: err.message });
     }
-    current.text += ' ' + e.text;
+    await new Promise(r => setTimeout(r, 150));
   }
-  if (current) chunks.push(current);
-  return chunks;
+
+  res.json({ videos: all, errors, total: all.length });
+});
+
+// ─── Claude: Generate game for one technique ──────────────────────────────────
+
+app.post('/api/claude/generate-game', async (req, res) => {
+  const { technique, position, level } = req.body;
+  if (!technique || !position) return res.status(400).json({ error: 'Missing technique or position' });
+  if (!CLAUDE_KEY) return res.status(500).json({ error: 'Claude API key not configured on server' });
+
+  const prompt = `You are a No-Gi BJJ instructor designing a competitive positional game for class.
+
+Technique: "${technique}"
+Position: "${position}"
+Student Level: ${level || 'Mixed'}
+
+Create a 2-player positional game that trains this technique. One player is on TOP, one is on BOTTOM.
+
+Respond with a JSON object only, no markdown, no explanation:
+{
+  "situation": "<one sentence: the starting scenario/setup>",
+  "topObjective": "<what the TOP player must accomplish — be specific, 1-2 sentences>",
+  "bottomObjective": "<what the BOTTOM player must accomplish — be specific, 1-2 sentences>",
+  "coachCue": "<single most critical coaching point that separates good from sloppy execution>",
+  "duration": "<e.g., '3-min rounds, first to 3 reps'>",
+  "scoring": "<e.g., '1pt per successful finish, 2pt for clean setup + finish'>"
 }
 
-function toTimestamp(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
+Rules:
+- No gi grips (no collar, no sleeve, no lapel)
+- Winning condition must reward correct technique, not just athleticism
+- Keep rules simple enough to explain in 60 seconds`;
 
-function toSeconds(ts) {
-  const parts = ts.split(':').map(Number);
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  return 0;
+  try {
+    const text = await callClaude(prompt);
+    try {
+      res.json(JSON.parse(text));
+    } catch {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) res.json(JSON.parse(match[0]));
+      else res.status(500).json({ error: 'Invalid JSON from Claude', raw: text });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Claude: Generate games for all techniques (batch) ────────────────────────
+
+app.post('/api/claude/generate-games-batch', async (req, res) => {
+  const { techniques } = req.body;
+  if (!Array.isArray(techniques)) return res.status(400).json({ error: 'Missing techniques array' });
+  if (!CLAUDE_KEY) return res.status(500).json({ error: 'Claude API key not configured on server' });
+
+  // Use SSE to stream progress back to client
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const results = {};
+  let errors = 0;
+
+  for (let i = 0; i < techniques.length; i++) {
+    const t = techniques[i];
+    const key = `${t.position}::${t.technique}`;
+
+    res.write(`data: ${JSON.stringify({ type: 'progress', done: i, total: techniques.length, technique: t.technique, position: t.position })}\n\n`);
+
+    try {
+      const prompt = `You are a No-Gi BJJ instructor. Create a 2-player positional game for "${t.technique}" from "${t.position}" (${t.level} level).
+Respond with JSON only: {"situation":"...","topObjective":"...","bottomObjective":"...","coachCue":"...","duration":"...","scoring":"..."}
+No gi grips. Rules explainable in 60 seconds.`;
+
+      const text = await callClaude(prompt);
+      let gameData;
+      try { gameData = JSON.parse(text); }
+      catch { const m = text.match(/\{[\s\S]*\}/); if (m) gameData = JSON.parse(m[0]); }
+
+      if (gameData) results[key] = gameData;
+    } catch (err) {
+      errors++;
+      res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: err.message })}\n\n`);
+    }
+
+    await new Promise(r => setTimeout(r, 1200));
+  }
+
+  res.write(`data: ${JSON.stringify({ type: 'done', results, errors, total: techniques.length })}\n\n`);
+  res.end();
+});
+
+// ─── Claude helper ─────────────────────────────────────────────────────────────
+
+async function callClaude(prompt, retries = 3) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await fetch(CLAUDE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return data.content?.[0]?.text || '';
+    }
+
+    const err = await res.json().catch(() => ({}));
+    if ((res.status === 429 || res.status === 529) && attempt < retries) {
+      const wait = Math.pow(2, attempt + 1) * 2000;
+      await new Promise(r => setTimeout(r, wait));
+      continue;
+    }
+    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  }
+  throw new Error('Max retries exceeded');
 }
 
 // ─── Start ─────────────────────────────────────────────────────────────────────
@@ -288,6 +262,6 @@ function toSeconds(ts) {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ 450JJ Backend running on port ${PORT}`);
-  console.log(`   Auth: http://localhost:${PORT}/auth/google`);
-  console.log(`   Google OAuth: ${process.env.GOOGLE_CLIENT_ID ? '✓ configured' : '✗ missing GOOGLE_CLIENT_ID'}`);
+  console.log(`   YouTube API: ${YT_KEY ? '✓' : '✗ missing YOUTUBE_API_KEY'}`);
+  console.log(`   Claude API:  ${CLAUDE_KEY ? '✓' : '✗ missing CLAUDE_API_KEY'}`);
 });

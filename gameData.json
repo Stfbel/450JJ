@@ -1,0 +1,731 @@
+[
+  {
+    "index": 1,
+    "situation": "Bottom player has closed guard locked with overhooks or wrist control, top player is posturing inside the guard.",
+    "topObjective": "Maintain strong posture, keep elbows tight, and work to open the closed guard without getting swept or submitted.",
+    "bottomObjective": "Break posture, control a wrist, cut an angle, and finish the triangle choke.",
+    "coachCue": "Cut the angle — your hips must be off-center before you lock the triangle.",
+    "duration": "3-min rounds, switch top/bottom each round",
+    "scoring": "2pt per triangle locked, 3pt per tap, 1pt per sweep to mounted triangle"
+  },
+  {
+    "index": 2,
+    "situation": "Bottom player has closed guard with a two-on-one grip on the top player's wrist, top player is trying to posture and free the arm.",
+    "topObjective": "Defend the kimura by keeping your elbow glued to your body and posturing up; work to pass the guard.",
+    "bottomObjective": "Isolate the arm, secure the figure-four grip, hip out, and finish the kimura.",
+    "coachCue": "Pin the wrist to the mat first — never chase the kimura grip while they're still postured.",
+    "duration": "3-min rounds, first to 3 submissions",
+    "scoring": "2pt per kimura grip secured, 3pt per tap, 1pt for successfully defending and passing"
+  },
+  {
+    "index": 3,
+    "situation": "Bottom player has closed guard, top player is working to open and pass; live sparring from closed guard.",
+    "topObjective": "Open the closed guard and establish a passing position without getting swept or submitted.",
+    "bottomObjective": "Sweep the top player to achieve a dominant top position or submit from guard.",
+    "coachCue": "Bottom player: always re-break posture before attacking — no posture break, no sweep.",
+    "duration": "4-min rounds, rotate partners",
+    "scoring": "1pt per sweep, 2pt per guard pass, 3pt per submission"
+  },
+  {
+    "index": 4,
+    "situation": "Top player has established full mount with hands on the mat for base, bottom player has arms defensively framed.",
+    "topObjective": "Maintain mount and hunt for submissions; re-mount if displaced.",
+    "bottomObjective": "Trap an arm and a foot on the same side, bridge explosively, and escape to guard or top position.",
+    "coachCue": "Bridge into them, not up — drive your hips toward the trapped side at a 45-degree angle.",
+    "duration": "2-min rounds, switch roles each round",
+    "scoring": "2pt per successful upa escape, 1pt per remount, 3pt per submission from mount"
+  },
+  {
+    "index": 5,
+    "situation": "Top player has established mount in a competition-pace scenario; bottom player is actively defending and trying to escape.",
+    "topObjective": "Maintain mount pressure, transition between low mount and high mount, and finish a submission under competition intensity.",
+    "bottomObjective": "Escape mount using any legal technique and recover to a neutral or dominant position.",
+    "coachCue": "Top player: swim your hands inside their frames — whoever wins the underhook battle controls the mount.",
+    "duration": "5-min rounds, competition rules",
+    "scoring": "ADCC scoring: 2pt mount, 1pt escape to guard, sub wins the round"
+  },
+  {
+    "index": 6,
+    "situation": "Attacker has seatbelt grip with hooks in from back control; defender has chin tucked and hands fighting the choking arm.",
+    "topObjective": "Maintain back control, keep hooks active, and attack the rear naked choke.",
+    "bottomObjective": "Clear the hooks, turn into the attacker, fight the choking hand to the low side, and escape to guard or top.",
+    "coachCue": "Get to the side of the underhook — escape toward the weak side of the seatbelt, never toward the choking arm.",
+    "duration": "3-min rounds, switch attacker/defender",
+    "scoring": "2pt per clean escape to guard, 3pt per submission, 1pt per hook cleared"
+  },
+  {
+    "index": 7,
+    "situation": "Attacker has a dominant position (side control or turtle) and is hunting to take the back; defender is protecting their neck and hips.",
+    "topObjective": "Secure a seatbelt grip, insert hooks or body triangle, and establish full back control.",
+    "bottomObjective": "Deny the seatbelt, block hook insertion, and return to a neutral guard position.",
+    "coachCue": "Seatbelt first, then the first hook — never jump to the back without upper body control.",
+    "duration": "4-min rounds, rotating roles",
+    "scoring": "3pt per back take with both hooks, 2pt per seatbelt with one hook, 1pt per escape to guard"
+  },
+  {
+    "index": 8,
+    "situation": "Top player has established side control with crossface and underhook, bottom player has frames on the hip and neck.",
+    "topObjective": "Maintain side control, neutralize frames, and advance to mount or north-south.",
+    "bottomObjective": "Create enough space with frames and hip escapes to recover guard or get to knees.",
+    "coachCue": "Frame on the neck and hip, shrimp to create space — never flat on your back, always on your side.",
+    "duration": "2-min rounds, switch roles",
+    "scoring": "2pt per guard recovery, 2pt per mount transition, 3pt per submission"
+  },
+  {
+    "index": 9,
+    "situation": "Bottom player has half guard with a knee shield and underhook battle is active; top player is working to flatten and pass.",
+    "topObjective": "Kill the knee shield, establish crossface, flatten the bottom player, and work to pass half guard.",
+    "bottomObjective": "Maintain the knee shield, fight for the underhook, and recover to full guard or sweep.",
+    "coachCue": "Never lose the knee shield and the underhook at the same time — if one goes, fight twice as hard for the other.",
+    "duration": "3-min rounds, switch top/bottom",
+    "scoring": "1pt per guard recovery, 2pt per half guard pass, 2pt per sweep, 3pt per submission"
+  },
+  {
+    "index": 10,
+    "situation": "Competition-intensity half guard battle; bottom player pulling half guard, top player engaging immediately to pass.",
+    "topObjective": "Pass the half guard using any technique within competition rules and advance to a scoring position.",
+    "bottomObjective": "Sweep or submit from half guard under competition pressure; recover full guard if losing position.",
+    "coachCue": "Underhook wins half guard — whoever gets it first dictates the exchange.",
+    "duration": "5-min rounds, ADCC pacing",
+    "scoring": "ADCC scoring: 3pt guard pass, 2pt sweep, sub wins round"
+  },
+  {
+    "index": 11,
+    "situation": "Top player has nearly passed half guard; bottom player has only a quarter guard (ankle or foot trapped between top player's legs).",
+    "topObjective": "Extract your trapped foot, complete the pass, and establish a dominant position.",
+    "bottomObjective": "Use the quarter guard to re-enter half guard, recover full guard, or find an underhook to sweep.",
+    "coachCue": "Bottom: get on your side immediately — if you stay flat in quarter guard you will get passed.",
+    "duration": "2-min rounds, switch roles",
+    "scoring": "2pt per full guard recovery from quarter guard, 3pt per completed pass, 1pt per half guard recovery"
+  },
+  {
+    "index": 12,
+    "situation": "Attacker has outside ashi garami with heel exposure; defender is working to free the knee line and disengage.",
+    "topObjective": "Control the heel, break the knee line, apply rotational force, and finish the outside heel hook.",
+    "bottomObjective": "Clear the knee line, turn into the attacker to relieve rotational pressure, and extract your leg.",
+    "coachCue": "Control the toes with your wrist, not your fingers — rotate the heel by turning your whole body.",
+    "duration": "3-min rounds, tap early and reset",
+    "scoring": "3pt per heel hook finish, 2pt per heel exposure with control, 1pt per successful leg extraction"
+  },
+  {
+    "index": 13,
+    "situation": "Attacker has an ashi garami position and is hunting for a heel hook; defender must escape before the submission is locked.",
+    "topObjective": "Maintain leg entanglement, expose the heel, and attack the heel hook.",
+    "bottomObjective": "Boot your foot free, clear the knee line, and disengage safely to a neutral position.",
+    "coachCue": "Turn your knee toward the attacker and push the hips — never pull straight back, that exposes the heel.",
+    "duration": "2-min rounds, immediate reset on tap",
+    "scoring": "2pt per clean leg escape, 3pt per heel hook, 1pt per re-guard after leg escape"
+  },
+  {
+    "index": 14,
+    "situation": "Both players are seated; either can engage the legs to initiate a leg lock exchange or pull guard.",
+    "topObjective": "Enter into a dominant leg entanglement (inside sankaku, outside ashi, or 50/50), expose the heel, and finish.",
+    "bottomObjective": "Win the leg entanglement battle, achieve a superior ashi position, and attack or sweep.",
+    "coachCue": "Win the inside position — whoever controls the inside space controls the leg lock game.",
+    "duration": "4-min rounds, continuous leg lock exchanges",
+    "scoring": "1pt per entry to ashi garami, 2pt per heel exposure, 3pt per submission"
+  },
+  {
+    "index": 15,
+    "situation": "Attacker has inside sankaku (411/honey hole) with one heel hook attempt defended; chaining to the next attack.",
+    "topObjective": "Chain heel hook attempts by transitioning between inside sankaku, outside ashi, and 50/50 as the defender escapes each position.",
+    "bottomObjective": "Defend each heel hook attempt, clear your legs, and work to disengage or reverse the entanglement.",
+    "coachCue": "When they clear the first hook, immediately backstep to outside ashi — never let them fully escape between attacks.",
+    "duration": "3-min rounds, continuous chains",
+    "scoring": "1pt per successful transition to new entanglement, 3pt per submission, 2pt per complete escape to neutral"
+  },
+  {
+    "index": 16,
+    "situation": "Competition-pace leg lock scenario starting from a seated guard pull; both players engage for leg entanglements immediately.",
+    "topObjective": "Win the leg entanglement exchange, achieve a dominant ashi position, and finish a heel hook under competition pressure.",
+    "bottomObjective": "Counter-attack the leg locks, reverse to a dominant leg position, or disengage and come on top.",
+    "coachCue": "First to the inside heel wins — speed of entry matters more than grip strength in competition leg locks.",
+    "duration": "5-min rounds, EBI overtime rules for draws",
+    "scoring": "Sub wins round; 2pt per dominant leg control position, 1pt per escape"
+  },
+  {
+    "index": 17,
+    "situation": "Top player is standing, bottom player has open guard with feet on hips; top player is gripping both legs hunting for the leg drag.",
+    "topObjective": "Execute the leg drag by pulling one leg across the body, pinning the hip, and completing the pass to side control.",
+    "bottomObjective": "Prevent the leg drag by framing on the knee, recovering hip position, and re-establishing open guard.",
+    "coachCue": "Staple the hip to the mat after the drag — if their hip is free, they will re-guard.",
+    "duration": "4-min rounds, competition pace",
+    "scoring": "3pt per completed leg drag pass, 1pt per guard recovery, 2pt per sweep from guard"
+  },
+  {
+    "index": 18,
+    "situation": "Top player is in the bottom player's open guard, working to establish chest-to-chest pressure and eliminate space.",
+    "topObjective": "Close the distance, establish heavy chest pressure, kill the legs, and methodically pass to side control.",
+    "bottomObjective": "Maintain frames, create distance, use guard retention to prevent the pressure pass, and look for sweeps.",
+    "coachCue": "Head position wins pressure passing — drive your head under their chin and make them carry your weight.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per guard pass, 2pt per sweep, 1pt per guard recovery after near-pass"
+  },
+  {
+    "index": 19,
+    "situation": "Top player is in half guard working to smash pass; bottom player has a knee shield but top player is pressuring through it.",
+    "topObjective": "Drive through the knee shield with shoulder pressure, flatten the bottom player, and complete the smash pass.",
+    "bottomObjective": "Use the knee shield to maintain distance, recover full guard, or sweep when the top player over-commits.",
+    "coachCue": "Top: drop your hips and drive your shoulder into their jaw line — heavy hips kill the knee shield.",
+    "duration": "3-min rounds, live pace",
+    "scoring": "3pt per completed smash pass, 2pt per sweep, 1pt per full guard recovery"
+  },
+  {
+    "index": 20,
+    "situation": "Bottom player has open guard (butterfly, seated, or feet-on-hips); top player is standing and engaging to pass.",
+    "topObjective": "Shut down the open guard, strip the hooks and frames, and pass to a dominant position.",
+    "bottomObjective": "Use open guard hooks and grips to off-balance the top player and execute a sweep to top position.",
+    "coachCue": "Bottom: your head must be higher than your hips at the moment of the sweep — sit up into them.",
+    "duration": "3-min rounds, rotate partners",
+    "scoring": "2pt per sweep to top, 3pt per guard pass, 1pt per guard recovery"
+  },
+  {
+    "index": 21,
+    "situation": "Bottom player is turtled with elbows and knees tight; top player is on top working to break the turtle down.",
+    "topObjective": "Break the turtle by inserting hooks, securing a seatbelt, and transitioning to back control or a front headlock.",
+    "bottomObjective": "Protect the neck and hips, deny hooks, and either sit out to guard or stand up to base.",
+    "coachCue": "Top: get chest-to-back contact first — you cannot insert hooks from a distance.",
+    "duration": "3-min rounds, live pace",
+    "scoring": "3pt per back take, 2pt per front headlock with control, 1pt per turtle escape to guard, 2pt per stand-up escape"
+  },
+  {
+    "index": 22,
+    "situation": "Competition-pace standing or clinch exchange where one player is hunting the guillotine off a failed shot or in the scramble.",
+    "topObjective": "Set up and finish the guillotine choke from any position — standing, seated, or in guard — under competition pressure.",
+    "bottomObjective": "Defend the guillotine by posturing, circling to the safe side, and clearing the neck grip to escape.",
+    "coachCue": "Chin strap grip and pull the elbow to your chest — power comes from arching your back, not squeezing your arm.",
+    "duration": "5-min rounds, competition pace",
+    "scoring": "3pt per guillotine finish, 2pt per locked guillotine with guard, 1pt per successful defense and pass"
+  },
+  {
+    "index": 23,
+    "situation": "Competition-pace scramble where one player has a front headlock and is looking to lock up the darce or anaconda choke.",
+    "topObjective": "Secure the darce or anaconda grip from the front headlock, lock the figure-four, and finish the choke.",
+    "bottomObjective": "Defend the choke by framing, keeping your trapped arm tight, and working to clear the head and escape.",
+    "coachCue": "Walk your hips to the choking side — the darce finishes when your hip pressure drives their shoulder into their neck.",
+    "duration": "5-min rounds, competition pace",
+    "scoring": "3pt per darce/anaconda finish, 2pt per locked choke position, 1pt per escape to neutral"
+  },
+  {
+    "index": 24,
+    "situation": "Competition-pace guard scenario starting from closed guard; attacker is specifically hunting the triangle choke with full resistance.",
+    "topObjective": "Defend the triangle by maintaining posture, keeping both arms in or both arms out, and work to pass.",
+    "bottomObjective": "Set up and finish the triangle choke using competition-level setups including hip bump to triangle and overhook triangle.",
+    "coachCue": "Squeeze your knees together before you pull the head — the choke comes from the legs, the hand just finishes it.",
+    "duration": "5-min rounds, competition rules",
+    "scoring": "3pt per triangle finish, 2pt per locked triangle, 1pt per posture recovery and near-pass"
+  },
+  {
+    "index": 25,
+    "situation": "Film study scenario — players recreate positions from recent ADCC matches and drill the exchanges live.",
+    "topObjective": "Execute the top player's strategy from the studied match — apply the same passing, pressure, and submission sequences.",
+    "bottomObjective": "Execute the bottom player's strategy from the studied match — apply the same guard, sweeps, and submissions.",
+    "coachCue": "Focus on the transitions between positions, not just the final technique — ADCC matches are won in the micro-adjustments.",
+    "duration": "6-min rounds mimicking ADCC timing",
+    "scoring": "ADCC scoring: 3pt pass, 2pt sweep, 2pt takedown, sub wins round"
+  },
+  {
+    "index": 26,
+    "situation": "Both players are seated or in open guard, engaging in a live leg lock exchange mimicking competition scrambles.",
+    "topObjective": "Win the leg entanglement, achieve inside position, expose the heel, and finish the heel hook.",
+    "bottomObjective": "Counter the leg entries, fight for inside position, and either submit or disengage to come on top.",
+    "coachCue": "Track the knee line — whoever controls the knee line controls the entire exchange.",
+    "duration": "5-min rounds, competition pace with resets",
+    "scoring": "3pt per submission, 2pt per dominant entanglement with heel exposure, 1pt per escape to top"
+  },
+  {
+    "index": 27,
+    "situation": "Top player is caught in a triangle from closed guard; the triangle is partially locked but not yet fully cinched.",
+    "topObjective": "Defend and escape the triangle by posturing, stacking, and working your trapped arm across to relieve the choke.",
+    "bottomObjective": "Finish the triangle by cutting the angle, pulling the head down, and squeezing to complete the choke.",
+    "coachCue": "Posture immediately and stack — the longer you stay bent over in the triangle, the tighter it gets.",
+    "duration": "2-min rounds, start in the triangle position",
+    "scoring": "3pt per triangle escape to pass, 3pt per triangle finish, 1pt per re-lock after escape attempt"
+  },
+  {
+    "index": 28,
+    "situation": "Both players are in a neutral clinch position or one player is inside the other's open guard; focus is on establishing and maintaining correct posture.",
+    "topObjective": "Maintain upright posture with a straight spine, keep elbows connected to your body, and resist all attempts to break your posture.",
+    "bottomObjective": "Use grips and pulls to break the top player's posture down, collapsing their spine and bringing their head toward the mat.",
+    "coachCue": "Eyes up, chest up, hips forward — if your head drops, everything else follows.",
+    "duration": "2-min rounds, focus on posture only",
+    "scoring": "1pt per 5-second posture maintenance under pressure, 1pt per posture break held for 3 seconds"
+  },
+  {
+    "index": 29,
+    "situation": "Both players start on their knees; one player pushes, pulls, and tries to off-balance the other while both work to maintain base.",
+    "topObjective": "Maintain a wide, stable base while your partner tries to push, pull, and tip you over from all angles.",
+    "bottomObjective": "Off-balance the other player using push-pull combinations and circular movement to break their base.",
+    "coachCue": "Three points of contact at all times — widen your knees, post a hand when you feel the pull.",
+    "duration": "2-min rounds, switch attacker/defender",
+    "scoring": "1pt per successful off-balance (hand or knee touches mat), 1pt per 10 seconds of base maintained under pressure"
+  },
+  {
+    "index": 30,
+    "situation": "Both players are standing or in an open guard exchange; the focus is on hand fighting for wrist control, collar ties, and underhooks without gi grips.",
+    "topObjective": "Win dominant grips — collar tie, wrist control, or underhook — and use them to set up a pass or takedown entry.",
+    "bottomObjective": "Strip the opponent's grips, establish your own dominant grips, and use them to off-balance or set up attacks.",
+    "coachCue": "Never let them have a grip for free — if they grab you, strip it within two seconds or use it against them.",
+    "duration": "3-min rounds, grip fighting only (no takedowns or passes)",
+    "scoring": "1pt per dominant grip held for 3 seconds, 2pt per double underhook control, 1pt per grip strip"
+  },
+  {
+    "index": 31,
+    "situation": "Bottom player has closed guard with a controlled wrist and is working to set up the triangle; top player is defending with posture.",
+    "topObjective": "Maintain posture, keep both arms in or both arms out of the guard, and prevent the angle needed for the triangle.",
+    "bottomObjective": "Break posture, isolate one arm across the centerline using a push-pull combination, and shoot the legs up to lock the triangle.",
+    "coachCue": "Push the arm across your body, then immediately hip out and shoot your leg over the shoulder — timing beats strength.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per triangle locked, 3pt per tap, 1pt per posture recovery that prevents the setup"
+  },
+  {
+    "index": 32,
+    "situation": "Bottom player has closed guard with an overhook controlling one arm; top player is defending with elbow tight and posturing.",
+    "topObjective": "Free the trapped arm, maintain posture, and work to open the closed guard for a pass attempt.",
+    "bottomObjective": "Control the arm with the overhook, hip out, isolate the arm, and attack the armbar with correct grip and hip placement.",
+    "coachCue": "Pinch your knees tight and elevate your hips — the armbar finishes with hip pressure, not arm pulling.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per armbar grip secured with hips elevated, 3pt per tap, 1pt per arm extraction"
+  },
+  {
+    "index": 33,
+    "situation": "Both players are in an open guard exchange; attacker is looking to enter into a leg entanglement from standing or seated guard.",
+    "topObjective": "Enter into ashi garami, outside ashi, or inside sankaku from a guard pass attempt, a sweep defense, or a direct entry.",
+    "bottomObjective": "Deny the leg entries by keeping knees tight, fighting the initial bite, and clearing the legs before entanglement locks in.",
+    "coachCue": "Control the ankle first, then enter — a heel hook entry without ankle control is just a scramble.",
+    "duration": "3-min rounds, focus on entries only",
+    "scoring": "2pt per clean entry to any ashi position, 1pt per entry denied and guard recovered, 3pt per submission"
+  },
+  {
+    "index": 34,
+    "situation": "Attacker has ashi garami locked; focus is on understanding the mechanics of the position — hip alignment, knee line, and leverage angles.",
+    "topObjective": "Demonstrate and apply correct ashi garami mechanics — proper hip placement, knee line control, and shoulder-to-heel connection.",
+    "bottomObjective": "Identify and exploit gaps in the attacker's ashi mechanics to escape — misaligned hips, loose knee line, or free heel.",
+    "coachCue": "Your hips and their heel must be on the same line — if your hips are offline, the heel hook has no power.",
+    "duration": "2-min positional rounds, slow and methodical",
+    "scoring": "2pt per mechanically correct heel hook position held for 5 seconds, 1pt per mechanical flaw identified and exploited"
+  },
+  {
+    "index": 35,
+    "situation": "Defender is turtled with tight elbows and knees; attacker has chest-to-back contact and is hunting submissions from the turtle.",
+    "topObjective": "Attack the turtle with chokes (short choke, clock choke equivalent without gi), arm-in guillotine, or crucifix entries.",
+    "bottomObjective": "Defend submissions by keeping elbows tight, tucking the chin, and working to sit out, granby roll, or stand up.",
+    "coachCue": "Top: if the neck is hidden, attack the far arm for the crucifix — they can't protect both forever.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "3pt per submission from turtle, 2pt per back take, 2pt per turtle escape to guard or standing"
+  },
+  {
+    "index": 36,
+    "situation": "Top player has full mount; bottom player must escape using any technique — upa, elbow-knee escape, or heel drag.",
+    "topObjective": "Maintain mount position, adjust to escape attempts, and attack when openings appear.",
+    "bottomObjective": "Escape mount by any means — bridge and roll, shrimp to half guard, or trap and roll — and recover guard.",
+    "coachCue": "Don't just bridge — bridge AND turn. Combine the upa with elbow-knee escape for a two-threat game.",
+    "duration": "3-min rounds, live pace, switch roles",
+    "scoring": "2pt per mount escape to guard, 3pt per escape to top, 1pt per remount, 3pt per submission"
+  },
+  {
+    "index": 37,
+    "situation": "Top player has side control with strong crossface; bottom player is working frames and hip escapes to recover guard.",
+    "topObjective": "Maintain side control, advance to mount or north-south, and attack submissions from dominant position.",
+    "bottomObjective": "Frame, hip escape, recover guard — use any technique to get back to a guard position.",
+    "coachCue": "Get on your side first — flat on your back in side control means you're carrying all their weight.",
+    "duration": "3-min rounds, live pace, rotate",
+    "scoring": "2pt per guard recovery, 2pt per mount or north-south transition, 3pt per submission"
+  },
+  {
+    "index": 38,
+    "situation": "Top player is standing in the bottom player's open guard; basic passing concepts — posture, grip fighting, footwork.",
+    "topObjective": "Use correct passing mechanics — control the legs, manage distance, and complete a basic guard pass.",
+    "bottomObjective": "Maintain guard using frames, hip movement, and foot placement to prevent the pass.",
+    "coachCue": "Control both legs or no legs — having one leg controlled and one free is the most dangerous position for the passer.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "3pt per guard pass, 2pt per sweep, 1pt per guard recovery"
+  },
+  {
+    "index": 39,
+    "situation": "Bottom player has basic half guard with a knee shield; top player is working to flatten and pass.",
+    "topObjective": "Work to kill the knee shield, establish an underhook, and begin passing the half guard.",
+    "bottomObjective": "Maintain the knee shield, fight for the underhook, and look to recover full guard or set up a basic sweep.",
+    "coachCue": "Bottom: your knee shield is your door — keep it between you and them at all times until you're ready to attack.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per sweep, 3pt per pass, 1pt per full guard recovery"
+  },
+  {
+    "index": 40,
+    "situation": "Film study round — recreating common ADCC positional patterns including leg lock exchanges, body lock passing, and wrestling-up sequences.",
+    "topObjective": "Apply the recurring tactical patterns seen in ADCC — body lock passing, outside heel hooks from passing, and wrestling-up from bottom.",
+    "bottomObjective": "Counter the ADCC meta-game strategies and apply your own competition game plan.",
+    "coachCue": "In ADCC, the first player to stand and wrestle after a stalled guard exchange usually wins the scramble.",
+    "duration": "6-min rounds, ADCC timing and pacing",
+    "scoring": "ADCC scoring: 3pt pass, 2pt sweep, 2pt takedown, 4pt mount/back, sub wins"
+  },
+  {
+    "index": 41,
+    "situation": "Multiple players on the mat; king-of-the-mat format where the winner stays and a new challenger enters.",
+    "topObjective": "Win the exchange by sweep, pass, or submission and remain the king of the mat.",
+    "bottomObjective": "Dethrone the current king by scoring a sweep, pass, or submission within the time limit.",
+    "coachCue": "Stay composed — the king tires, so use your fresh energy wisely and attack immediately.",
+    "duration": "2-min rounds, winner stays on",
+    "scoring": "First to score wins: 1pt sweep, 1pt pass, instant win on submission"
+  },
+  {
+    "index": 42,
+    "situation": "Bottom player has closed guard; basic sweeping exchanges at live pace for beginners.",
+    "topObjective": "Maintain posture and base inside the closed guard; resist sweep attempts and try to open the guard.",
+    "bottomObjective": "Break posture and execute basic sweeps — scissor sweep, hip bump, or flower sweep — to get on top.",
+    "coachCue": "Grip and then move your hips — the sweep comes from your legs and hips, not from pulling with your arms.",
+    "duration": "3-min rounds, live pace",
+    "scoring": "2pt per sweep to top, 1pt per guard opening, 3pt per submission"
+  },
+  {
+    "index": 43,
+    "situation": "Attacker has back control with seatbelt grip and both hooks; working to finish the rear naked choke with various grips and setups.",
+    "topObjective": "Finish the rear naked choke using short choke, palm-to-palm grip, or gable grip variations while maintaining back control.",
+    "bottomObjective": "Defend the choke by fighting the hands, tucking the chin, and working to escape back control.",
+    "coachCue": "Get your choking arm under the chin — don't squeeze until the blade of your forearm is across the throat.",
+    "duration": "3-min rounds, switch attacker/defender",
+    "scoring": "3pt per RNC finish, 2pt per choke locked (chin strap secured under chin), 1pt per escape from back"
+  },
+  {
+    "index": 44,
+    "situation": "Attacker has back control with seatbelt; defender is actively trying to escape by clearing hooks and turning.",
+    "topObjective": "Maintain back control against active escape attempts — re-hook, adjust seatbelt, and transition between body triangle and hooks as needed.",
+    "bottomObjective": "Escape back control by systematically clearing hooks and turning into the attacker.",
+    "coachCue": "When they clear a hook, immediately switch to body triangle or re-hook with the other leg — never let both hooks go.",
+    "duration": "4-min rounds, focus on control maintenance",
+    "scoring": "1pt per 30 seconds of back control maintained, 2pt per full escape, 3pt per submission"
+  },
+  {
+    "index": 45,
+    "situation": "Top player has established side control; focus on attacking with americana, kimura, and arm-in chokes from the position.",
+    "topObjective": "Attack submissions from side control — americana, kimura, arm-in guillotine, or north-south choke transitions.",
+    "bottomObjective": "Defend submissions by keeping elbows tight, framing correctly, and escaping when the top player opens space to attack.",
+    "coachCue": "Make them choose: defend the choke or defend the arm lock — attack in pairs, never one at a time.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "3pt per submission, 2pt per submission attempt that forces a defensive scramble, 1pt per escape to guard"
+  },
+  {
+    "index": 46,
+    "situation": "Top player has side control; bottom player is working live escapes to recover any guard position.",
+    "topObjective": "Hold side control, shut down escape attempts, and advance position or submit.",
+    "bottomObjective": "Escape to any guard — half guard, full guard, or create a scramble to get back to a neutral position.",
+    "coachCue": "Create two escape threats at once — frame toward mount to make them shift, then shrimp the other way for guard.",
+    "duration": "3-min rounds, live pace",
+    "scoring": "2pt per guard recovery, 2pt per mount transition, 3pt per submission"
+  },
+  {
+    "index": 47,
+    "situation": "Top player is in the bottom player's half guard; working to execute advanced passes — knee slide, leg weave, or backstep.",
+    "topObjective": "Execute an advanced half guard pass — knee slide with crossface, leg weave, or backstep to leg drag.",
+    "bottomObjective": "Defend the pass using frames, underhook battle, and guard retention; counter with sweeps when available.",
+    "coachCue": "Knee slide: your knee must go to the mat on the far side of their hip — if it stalls on their thigh, you're stuck.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per completed pass, 2pt per sweep, 1pt per full guard recovery"
+  },
+  {
+    "index": 48,
+    "situation": "Top player is standing vs seated or supine guard; using quick footwork and misdirection to pass rather than pressure.",
+    "topObjective": "Pass the guard using speed and timing — torreando, leg drag, or X-pass — without engaging in a pressure battle.",
+    "bottomObjective": "Track the passer with your feet and hips, maintain guard, and counter-attack when the passer over-commits to one side.",
+    "coachCue": "Change direction — speed passing works when you fake one way and go the other, not when you just run around the legs.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "3pt per guard pass, 2pt per sweep, 1pt per successful guard retention after a near-pass"
+  },
+  {
+    "index": 49,
+    "situation": "Bottom player has open guard (butterfly, DLR, or seated); working sweeps in live rounds.",
+    "topObjective": "Shut down the open guard sweeps by controlling distance, staying balanced, and initiating guard passes.",
+    "bottomObjective": "Sweep from open guard using hook sweeps, technical stand-ups, or overhead sweeps to achieve top position.",
+    "coachCue": "Load them onto your butterfly hook before you sweep — if they're not on the hook, you're just pushing air.",
+    "duration": "3-min rounds, live pace, rotate",
+    "scoring": "2pt per sweep to top, 3pt per guard pass, 1pt per guard retention"
+  },
+  {
+    "index": 50,
+    "situation": "Bottom player has an open guard (butterfly, single-leg X, or K-guard); working advanced submissions and transitions from guard.",
+    "topObjective": "Pass the advanced open guard without getting caught in submissions or sweeps.",
+    "bottomObjective": "Attack with advanced guard techniques — triangle from guard, armbar, guillotine, or leg lock entries from open guard.",
+    "coachCue": "Threaten the sweep first — when they base to defend the sweep, the submission opens up.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per submission, 2pt per sweep, 3pt per guard pass, 1pt per submission attempt"
+  },
+  {
+    "index": 51,
+    "situation": "Players are in a clinch or front headlock position; attacker is looking to lock up the guillotine choke.",
+    "topObjective": "Secure the chin strap grip, pull guard or sprawl, and finish the guillotine with correct mechanics.",
+    "bottomObjective": "Defend the guillotine by posturing, circling away from the choking arm, and clearing the neck to a safe position.",
+    "coachCue": "Connect your elbow to your hip when you close the guillotine — the squeeze comes from shortening the distance, not from arm strength.",
+    "duration": "3-min rounds, switch attacker/defender",
+    "scoring": "3pt per guillotine finish, 2pt per guillotine locked in guard, 1pt per successful defense and pass"
+  },
+  {
+    "index": 52,
+    "situation": "Various positions where the armbar is available — mount, guard, side control; attacker is systematically hunting the arm.",
+    "topObjective": "Identify armbar opportunities from multiple positions and execute with correct hip placement, leg control, and finishing mechanics.",
+    "bottomObjective": "Defend the armbar by keeping elbows tight, clasping hands, stacking, and escaping before the hips elevate.",
+    "coachCue": "Pinch your knees before you extend — loose knees let them pull the arm out every time.",
+    "duration": "4-min rounds, rotating positions",
+    "scoring": "3pt per armbar finish, 2pt per armbar position locked with hips elevated, 1pt per escape"
+  },
+  {
+    "index": 53,
+    "situation": "Film study round — recreating key positions from a recent professional match and drilling the exchanges live.",
+    "topObjective": "Apply the winning strategies from the analyzed match — replicate the passing sequences, positional advances, and finishes.",
+    "bottomObjective": "Apply the defensive strategies or counters that could have changed the match outcome.",
+    "coachCue": "Identify the moment the match shifted — what grip, angle, or transition gave one player the advantage, and replicate it.",
+    "duration": "5-min rounds, match pace",
+    "scoring": "Match-specific scoring based on the techniques being studied"
+  },
+  {
+    "index": 54,
+    "situation": "Solo movement round — each player performs BJJ-specific movements on their own to build coordination and stamina.",
+    "topObjective": "Execute hip escapes, technical stand-ups, granby rolls, and sit-throughs with correct form at increasing speed.",
+    "bottomObjective": "Same as top — this is a solo drill round where each player works independently on fundamental movements.",
+    "coachCue": "Hip escapes: shoulder, hip, feet — in that order, every single rep. Don't shortcut the sequence.",
+    "duration": "5-min continuous movement, 30 seconds per drill",
+    "scoring": "No scoring — focus on quality reps and movement fluency"
+  },
+  {
+    "index": 55,
+    "situation": "Partner drill round — cooperative drilling with a partner to build timing, feel, and coordination on fundamental techniques.",
+    "topObjective": "Provide appropriate resistance for your partner's technique while building your own defensive awareness.",
+    "bottomObjective": "Execute techniques with correct form against progressive resistance from a cooperative partner.",
+    "coachCue": "Start at 30% resistance and build to 70% — your partner should succeed most reps but have to earn it.",
+    "duration": "5-min rounds, switch attacker/defender every minute",
+    "scoring": "No scoring — focus on clean technique repetitions and progressive resistance"
+  },
+  {
+    "index": 56,
+    "situation": "Bottom player has closed guard with advanced triangle setups available — overhook triangle, rubber guard entries, or mounted triangle transitions.",
+    "topObjective": "Defend advanced triangle setups by maintaining posture, fighting grips, and recognizing the setups before they develop.",
+    "bottomObjective": "Execute advanced triangle variations — overhook triangle, opposite-side triangle, or mounted triangle transition.",
+    "coachCue": "Use the overhook to load the shoulder — when their shoulder crosses your centerline, the triangle is already halfway locked.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per triangle finish, 2pt per triangle locked, 1pt per defense that leads to posture recovery"
+  },
+  {
+    "index": 57,
+    "situation": "Bottom player has closed guard and has locked up the omoplata position on one arm; working to sweep rather than submit.",
+    "topObjective": "Defend the omoplata by posturing, rolling forward, or clearing the leg before the sweep is completed.",
+    "bottomObjective": "Use the omoplata position to sweep the top player face-down and come on top in a dominant position.",
+    "coachCue": "Sit up into the omoplata and control their far hip — the sweep finishes when you flatten them forward, not when you crank the shoulder.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per omoplata sweep to top, 3pt per omoplata submission, 1pt per roll escape to neutral"
+  },
+  {
+    "index": 58,
+    "situation": "Bottom player has closed guard locked; focus is on basic guard maintenance — keeping posture broken, controlling distance, and not getting opened.",
+    "topObjective": "Work to open the closed guard using posture, knee in the tailbone, and leg prying without getting swept or submitted.",
+    "bottomObjective": "Maintain closed guard by breaking posture, controlling a wrist, and keeping your ankles locked behind their back.",
+    "coachCue": "Ankles crossed, not feet — and pull them into you with your heels, don't just squeeze with your knees.",
+    "duration": "2-min rounds, switch roles",
+    "scoring": "1pt per guard opening, 1pt per posture break maintained for 5 seconds, 2pt per sweep or pass"
+  },
+  {
+    "index": 59,
+    "situation": "Bottom player has seated open guard; using a collar drag motion (no-gi: collar tie snap) to off-balance and take the back or come on top.",
+    "topObjective": "Maintain balance and posture against the collar drag snap-down; recover base and initiate a guard pass.",
+    "bottomObjective": "Snap the opponent's head down using a collar tie, shoot behind them for a back take, or come up to a front headlock.",
+    "coachCue": "Snap and circle — the collar drag only works if you move laterally after the snap, not if you pull them straight down.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "3pt per back take off the drag, 2pt per front headlock, 1pt per guard pass, 1pt per failed drag defended"
+  },
+  {
+    "index": 60,
+    "situation": "Top player has full mount; focus is on maintaining the position through various grips, transitions between low and high mount, and grapevine control.",
+    "topObjective": "Maintain mount for the full round using grapevines, high mount transitions, and swimming inside the frames.",
+    "bottomObjective": "Escape mount using upa, elbow-knee escape, heel drag, or any technique to recover guard.",
+    "coachCue": "Top: when they bridge, post and ride — when they shrimp, switch to high mount and block the knee with your foot.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "1pt per 30 seconds of mount maintained, 2pt per mount escape, 3pt per submission"
+  },
+  {
+    "index": 61,
+    "situation": "Top player has established mount; hunting for chokes — arm triangle, ezekiel (no-gi variation), and head-arm chokes from mount.",
+    "topObjective": "Set up and finish chokes from mount — arm triangle, mounted guillotine, or no-gi ezekiel — using correct pressure and angle.",
+    "bottomObjective": "Defend chokes by keeping hands near your neck, creating frames, and escaping before the choke is locked.",
+    "coachCue": "Drive their arm across with your head, then lock the arm triangle — your head is the fifth limb in mount chokes.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per choke finish, 2pt per locked choke position, 1pt per escape to half guard or better"
+  },
+  {
+    "index": 62,
+    "situation": "Various scramble positions — opponent is turtled, in open guard, or in a transition; attacker is looking to systematically enter back control.",
+    "topObjective": "Use a systematic approach to take the back — chair sit, truck entry, or arm drag to back — from various positions.",
+    "bottomObjective": "Deny the back take by protecting the seatbelt line, clearing hooks before they set, and turning into the attacker.",
+    "coachCue": "Seatbelt is the gateway — get the seatbelt from any position and the back take becomes mechanical.",
+    "duration": "4-min rounds, rotating starting positions",
+    "scoring": "3pt per full back take with hooks, 2pt per seatbelt with one hook, 1pt per back take denied and guard recovered"
+  },
+  {
+    "index": 63,
+    "situation": "Top player has side control and is transitioning to north-south; working to maintain control through the transition.",
+    "topObjective": "Transition smoothly from side control to north-south while maintaining chest pressure, then attack north-south choke or kimura.",
+    "bottomObjective": "Use the transition moment to escape — frame during the spin and recover guard before north-south is established.",
+    "coachCue": "Keep your chest glued to theirs during the spin — any space during the transition and they'll sneak a knee in.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per clean north-south established, 3pt per submission from north-south, 2pt per escape during transition"
+  },
+  {
+    "index": 64,
+    "situation": "Top player has knee on belly with one knee driving into the bottom player's abdomen; working submissions and transitions.",
+    "topObjective": "Maintain knee on belly, force a reaction, and attack — far armbar, baseball choke (no-gi variation), or transition to mount.",
+    "bottomObjective": "Frame against the knee, turn toward the top player, and escape to half guard, closed guard, or create a scramble.",
+    "coachCue": "Drive the knee across their belly button, not on the ribs — grab the far wrist and wait for them to push your knee.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "1pt per 10 seconds of knee on belly, 3pt per submission, 2pt per escape to guard"
+  },
+  {
+    "index": 65,
+    "situation": "Both players are in an open leg entanglement (50/50 or outside ashi); focus is on understanding reaping mechanics and knee line control.",
+    "topObjective": "Apply reaping pressure by controlling the knee line and turning the opponent's knee inward to expose the heel for attack.",
+    "bottomObjective": "Defend the reap by tracking the knee line, keeping your knee aligned with your hip, and working to clear the entanglement.",
+    "coachCue": "Control the knee line by pinching your knees together and curling your heels — your whole body creates the reap, not just your legs.",
+    "duration": "3-min rounds, slow positional work",
+    "scoring": "2pt per heel exposure through reaping, 1pt per knee line cleared, 3pt per submission"
+  },
+  {
+    "index": 66,
+    "situation": "Attacker has a calf slicer or bicep slicer position locked; working to understand and apply compression lock mechanics.",
+    "topObjective": "Apply the compression lock by correct wedge placement, driving the fulcrum into the muscle, and using body movement to finish.",
+    "bottomObjective": "Defend the compression lock by straightening the limb, clearing the wedge, and escaping the entanglement.",
+    "coachCue": "The calf slicer finishes when you triangle your legs and arch your back — the wedge does the work, not your arms.",
+    "duration": "3-min rounds, tap early and reset",
+    "scoring": "3pt per compression lock finish, 2pt per locked compression position, 1pt per escape"
+  },
+  {
+    "index": 67,
+    "situation": "Attacker has one leg entangled and is working to transition to the other leg when the defender clears the first attack.",
+    "topObjective": "Flow between leg entanglements — inside sankaku to outside ashi, 50/50 to inside sankaku, or ashi to crab ride — to maintain offensive pressure.",
+    "bottomObjective": "Defend each transition, clear your legs, and disengage or reverse to a dominant position.",
+    "coachCue": "When transitioning legs, always control the new ankle before releasing the old position — no dead space between attacks.",
+    "duration": "4-min rounds, continuous transitions",
+    "scoring": "1pt per successful leg transition, 3pt per submission, 2pt per complete escape to neutral"
+  },
+  {
+    "index": 68,
+    "situation": "Top player is standing in the bottom player's open guard; focus is on managing the distance — too close invites sweeps, too far invites re-guard.",
+    "topObjective": "Find and maintain the ideal passing distance — close enough to control the legs but far enough to avoid sweeps and submissions.",
+    "bottomObjective": "Manipulate the distance to either pull the passer into sweep range or push them away to re-establish guard.",
+    "coachCue": "Control the distance with your hands on their knees or ankles — if your hands are on the mat, you're too close.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per guard pass, 2pt per sweep, 1pt per distance reset to neutral"
+  },
+  {
+    "index": 69,
+    "situation": "Top player is facing a dynamic open guard (De La Riva, reverse De La Riva, or single-leg X) and must pass without getting swept.",
+    "topObjective": "Shut down the open guard hooks, strip the grips, and execute a pass — torreando, leg drag, or long step — against an active guard player.",
+    "bottomObjective": "Use open guard hooks to off-balance, sweep, or submit the passer when they commit to a passing lane.",
+    "coachCue": "Strip the dangerous hook first — in DLR it's the hook on the front leg, in SLX it's the hook behind the knee.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "3pt per guard pass, 2pt per sweep, 1pt per guard retention after a near-pass"
+  },
+  {
+    "index": 70,
+    "situation": "Bottom player has butterfly guard with double underhooks or collar ties; actively working to elevate and sweep.",
+    "topObjective": "Neutralize the butterfly hooks by sprawling, controlling the hips, and working to smash or go around the butterfly guard.",
+    "bottomObjective": "Use butterfly hooks to elevate, off-balance, and sweep the top player; chain into submissions when the sweep is defended.",
+    "coachCue": "Head in the center of their chest, double underhooks tight — when you elevate, kick the hook and turn the corner.",
+    "duration": "4-min rounds, switch roles",
+    "scoring": "2pt per butterfly sweep, 3pt per guard pass, 2pt per submission from butterfly"
+  },
+  {
+    "index": 71,
+    "situation": "Bottom player is in seated guard with feet on the floor, not yet engaging hooks; top player is standing and looking to engage.",
+    "topObjective": "Engage the seated guard player with controlled grips and pass without getting pulled into a sweep or guillotine.",
+    "bottomObjective": "Use the seated position to establish butterfly hooks, collar ties, or arm drags, and transition to a more active guard.",
+    "coachCue": "Sitting guard: never sit flat — always have one hip up and one hand posted so you can move in any direction.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "2pt per sweep from seated guard, 3pt per guard pass, 1pt per guard transition (seated to butterfly, etc.)"
+  },
+  {
+    "index": 72,
+    "situation": "Passer has nearly completed a guard pass; bottom player must recover guard from a bad position — near side control, near mount, or scramble.",
+    "topObjective": "Complete the guard pass and establish a dominant position; don't let the bottom player re-guard.",
+    "bottomObjective": "Recover guard from a nearly-passed position using hip movement, frames, and knee reinsertions.",
+    "coachCue": "Get your inside knee back between you and them — one knee inside is the difference between passed and guard.",
+    "duration": "3-min rounds, start from near-pass positions",
+    "scoring": "2pt per guard recovery, 3pt per completed pass to side control, 1pt per scramble to neutral"
+  },
+  {
+    "index": 73,
+    "situation": "Both players start standing in a competition stance; focus is on reactive takedowns — shooting off the opponent's movement or failed attack.",
+    "topObjective": "Time your shot off the opponent's step, reach, or level change — execute a reactive single leg or double leg takedown.",
+    "bottomObjective": "Defend the reactive shot with a sprawl, whizzer, or counter-shot and work to score your own takedown.",
+    "coachCue": "Shoot when they step — a reactive shot into their forward momentum is twice as powerful as a standing start.",
+    "duration": "4-min rounds, competition pace",
+    "scoring": "2pt per takedown to top, 1pt per sprawl defense that leads to a front headlock, 3pt per submission"
+  },
+  {
+    "index": 74,
+    "situation": "Both players start standing in a clinch; working trips, foot sweeps, and upper body throws without gi grips.",
+    "topObjective": "Execute trips (inside trip, outside trip) or throws (body lock throw, lateral drop) from the no-gi clinch.",
+    "bottomObjective": "Defend the trip or throw by maintaining balance, countering with your own trip, or pulling guard safely.",
+    "coachCue": "Inside trip: head on the same side as the tripping leg, drive your chest into theirs, and sweep the leg as you push forward.",
+    "duration": "3-min rounds, standing only, reset after each takedown",
+    "scoring": "2pt per trip or throw to ground, 1pt per sweep or off-balance, 3pt per throw to dominant position"
+  },
+  {
+    "index": 75,
+    "situation": "Attacker is seated with opponent in front; attacker pulls a front headlock and sits to guard to lock up a seated guillotine.",
+    "topObjective": "Finish the seated or guard guillotine by locking the chin strap, closing the guard, and arching the back.",
+    "bottomObjective": "Defend by posturing, circling to the weak side, and working to pass or clear the head before the choke locks.",
+    "coachCue": "Seat belt your hands and arch — in the seated guillotine your back arch is the engine, not your arms.",
+    "duration": "3-min rounds, switch attacker/defender",
+    "scoring": "3pt per guillotine finish, 2pt per locked guillotine in guard, 1pt per defense to pass or neutral"
+  },
+  {
+    "index": 76,
+    "situation": "Top player is passing the guard and the bottom player's arm is trapped across their body, exposing the darce choke as the pass completes.",
+    "topObjective": "Recognize the darce opening during the guard pass, lock the figure-four grip, and finish the darce choke while completing or abandoning the pass.",
+    "bottomObjective": "Keep your elbows tight during the guard pass to deny the darce; if caught, fight the grip and get your arm back to center.",
+    "coachCue": "Lock the darce as you pass — when their far underhook is deep during the pass, that arm is already halfway to being darced.",
+    "duration": "4-min rounds, start from passing positions",
+    "scoring": "3pt per darce finish, 2pt per darce locked during pass, 3pt per guard pass without darce, 1pt per escape"
+  },
+  {
+    "index": 77,
+    "situation": "Bottom player has a triangle locked from guard; the arm is trapped and the attacker is transitioning to an armbar without releasing the triangle.",
+    "topObjective": "Transition from triangle to armbar by controlling the trapped arm, opening the legs, pivoting the hips, and extending the arm.",
+    "bottomObjective": "Defend the triangle-to-armbar transition by pulling the arm free, posturing, or stacking before the armbar is locked.",
+    "coachCue": "Keep the arm controlled with your legs as you pivot — if the arm escapes during the transition, you lose both submissions.",
+    "duration": "3-min rounds, start from triangle position",
+    "scoring": "3pt per armbar finish from triangle, 2pt per locked armbar position, 1pt per escape from the transition"
+  },
+  {
+    "index": 78,
+    "situation": "Attacker has back control with seatbelt and hooks; transitioning from RNC defense to an armbar by trapping the arm and rotating.",
+    "topObjective": "Trap the choking arm, pivot your hips out, and finish the armbar from the back control position.",
+    "bottomObjective": "Defend the armbar by pulling the arm back, tucking the elbow, and turning into the attacker to recover back control.",
+    "coachCue": "Trap the wrist, plant your foot on their hip, and rotate your body perpendicular — the armbar from back is all about hip angle.",
+    "duration": "3-min rounds, start from back control",
+    "scoring": "3pt per armbar from back, 2pt per armbar attempt with hip rotation, 1pt per arm extraction and back recovery"
+  },
+  {
+    "index": 79,
+    "situation": "Competition-pace round — one player is pulling guard, the other is immediately working to pass; full resistance exchange.",
+    "topObjective": "Pass the guard using any technique and advance to a scoring position under competition pressure.",
+    "bottomObjective": "Sweep, submit, or maintain guard from the bottom under competition pressure; wrestle up if the guard is being shut down.",
+    "coachCue": "The bottom player who wrestles up when their guard is being shut down wins more matches than the one who fights from their back.",
+    "duration": "6-min rounds, competition pace",
+    "scoring": "ADCC scoring: 3pt pass, 2pt sweep, 2pt takedown, 4pt mount/back, sub wins"
+  },
+  {
+    "index": 80,
+    "situation": "Both players are in an open guard exchange; focus is on controlling the distance — when to be close, when to be far, and how to transition between the two.",
+    "topObjective": "Manage distance by controlling grips, posting on hips, and choosing when to close distance for a pass or create space to disengage.",
+    "bottomObjective": "Manipulate distance by pulling the opponent in for attacks or pushing away to reset and rebuild guard.",
+    "coachCue": "The player who controls the distance controls the match — decide if you want to be close or far, never be in between.",
+    "duration": "3-min rounds, switch roles",
+    "scoring": "1pt per clean distance change (close to far or far to close), 2pt per sweep or pass, 3pt per submission"
+  },
+  {
+    "index": 81,
+    "situation": "Solo and partner hip movement drill round — shrimping, hip switches, granby rolls, and sit-outs with progressive resistance.",
+    "topObjective": "Execute all hip movement patterns — hip escape, reverse hip escape, granby roll, hip switch, and sit-out — with smooth, continuous motion.",
+    "bottomObjective": "Same as top — all players are drilling hip movements independently, then with a partner providing light resistance.",
+    "coachCue": "Your hips are your engine — every escape, every sweep, every guard retention starts with your hips moving first.",
+    "duration": "5-min continuous, alternating solo and partner drills every 60 seconds",
+    "scoring": "No scoring — focus on fluidity and hip movement quality"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ':*)",
+      "Bash(node scripts/test-timestamps.mjs \"https://www.youtube.com/watch?v=LioPGifAlYg\" \"Triangle Choke\" \"Closed Guard\" \"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\")",
+      "Bash(python3 -m yt_dlp --list-subs \"https://www.youtube.com/watch?v=5ED_yLiMhyc\")"
+    ]
+  }
+}

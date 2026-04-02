@@ -1,9 +1,6 @@
-import { useState, useRef } from 'react';
-import { X, RefreshCw, Key, CheckCircle2, AlertCircle, Loader2, Trash2, Sparkles, Youtube, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { X, RefreshCw, CheckCircle2, AlertCircle, Loader2, Trash2, Sparkles, Youtube, ChevronDown, ChevronUp } from 'lucide-react';
 import {
-  getApiKey,
-  saveApiKey,
-  broadCrawlBJJ,
   matchVideosToTechnique,
   getSyncedVideos,
   saveSyncedVideos,
@@ -17,13 +14,11 @@ import {
   YouTubeSearchResult,
 } from '../utils/youtubeApi';
 import {
-  getClaudeApiKey,
-  saveClaudeApiKey,
-  generateGameForTechnique,
   getSyncedGames,
   saveSyncedGames,
   clearSyncedGames,
 } from '../utils/claudeApi';
+import { crawlYouTubeViaBackend, generateGamesBatchViaBackend, isBackendConfigured } from '../utils/backendApi';
 import { techniques } from '../data/techniques';
 
 interface SyncPanelProps {
@@ -40,13 +35,7 @@ interface PhaseProgress {
 }
 
 export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
-  const [ytKey, setYtKey] = useState(getApiKey());
-  const [ytKeyInput, setYtKeyInput] = useState(getApiKey());
-  const [showYtKey, setShowYtKey] = useState(false);
-
-  const [claudeKey, setClaudeKey] = useState(getClaudeApiKey());
-  const [claudeKeyInput, setClaudeKeyInput] = useState(getClaudeApiKey());
-  const [showClaudeKey, setShowClaudeKey] = useState(false);
+  const [backendOk, setBackendOk] = useState<boolean | null>(null);
 
   const [ytStatus, setYtStatus] = useState<PhaseStatus>('idle');
   const [gamesStatus, setGamesStatus] = useState<PhaseStatus>('idle');
@@ -68,15 +57,14 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
 
   const isRunning = ytStatus === 'running' || gamesStatus === 'running';
 
-  const handleSaveYtKey = () => { saveApiKey(ytKeyInput); setYtKey(ytKeyInput); };
-  const handleSaveClaudeKey = () => { saveClaudeApiKey(claudeKeyInput); setClaudeKey(claudeKeyInput); };
+  useEffect(() => {
+    isBackendConfigured().then(setBackendOk);
+  }, []);
 
   const handleSyncYouTube = async () => {
-    if (!ytKey) return;
     abortRef.current = false;
     setYtStatus('running');
     setYtError('');
-    setYtProgress({ done: 0, total: BJJ_SEARCH_QUERIES.length, errors: 0 });
 
     const queries = quotaTier === 'eco' ? BJJ_SEARCH_QUERIES_TIER1 : BJJ_SEARCH_QUERIES;
     setYtProgress({ done: 0, total: queries.length, errors: 0 });
@@ -87,18 +75,15 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
 
     if (pool.length === 0) {
       try {
-        pool = await broadCrawlBJJ(
-          ytKey,
-          (done, total, videoCount, err) => {
-            setYtProgress({ done, total, errors: err ? 1 : 0 });
+        pool = await crawlYouTubeViaBackend(
+          queries,
+          (done, total, videoCount) => {
+            setYtProgress({ done, total, errors: 0 });
             setPoolCount(videoCount);
-            if (err) setYtError(err);
-          },
-          abortRef,
-          queries
+          }
         );
       } catch (err: any) {
-        setYtError(err?.message || 'API error — check your key');
+        setYtError(err?.message || 'Backend error — server may be unavailable');
         setYtStatus('error');
         return;
       }
@@ -106,7 +91,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
       if (abortRef.current) { setYtStatus('idle'); return; }
 
       if (pool.length === 0) {
-        setYtError('No videos found — check your API key and quota (resets midnight PT)');
+        setYtError('No videos found — server may be unavailable or quota exhausted');
         setYtStatus('error');
         return;
       }
@@ -132,16 +117,12 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
   };
 
   const handleGenerateGames = async () => {
-    if (!claudeKey) return;
     abortRef.current = false;
     setGamesStatus('running');
     setGamesProgress({ done: 0, total: techniques.length, errors: 0 });
     setCompletedGames([]);
     setCurrentTechnique('');
     setCurrentStep('');
-
-    const existing = getSyncedGames();
-    let errors = 0;
     setLastError('');
 
     const COACH_STEPS = [
@@ -155,39 +136,44 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
       'Validating game structure…',
     ];
 
-    for (let i = 0; i < techniques.length; i++) {
-      if (abortRef.current) break;
-      const t = techniques[i];
-      const key = getSyncedKey(t.technique, t.position);
+    // Animate coach steps while streaming
+    const stepInterval = setInterval(() => {
+      setCurrentStep(COACH_STEPS[Math.floor(Math.random() * COACH_STEPS.length)]);
+    }, 300);
 
-      setCurrentTechnique(`${t.technique} — ${t.position}`);
+    let errors = 0;
 
-      // Animate through coach steps while waiting
-      const stepInterval = setInterval(() => {
-        setCurrentStep(COACH_STEPS[Math.floor(Math.random() * COACH_STEPS.length)]);
-      }, 300);
+    try {
+      const results = await generateGamesBatchViaBackend(
+        techniques.map(t => ({ technique: t.technique, position: t.position, level: t.level })),
+        (done, total, technique, position) => {
+          setCurrentTechnique(`${technique} — ${position}`);
+          setGamesProgress({ done, total, errors });
+          setCompletedGames((prev) => [...prev.slice(-4), { technique, position }]);
+        },
+        (technique, error) => {
+          errors++;
+          setLastError(`${technique}: ${error}`);
+          setGamesProgress((prev) => ({ ...prev, errors }));
+        },
+        abortRef
+      );
 
-      try {
-        const gameData = await generateGameForTechnique(t.technique, t.position, t.level, claudeKey);
-        clearInterval(stepInterval);
-        setCurrentStep('');
-        existing[key] = gameData;
-        saveSyncedGames(existing);
-        setCompletedGames((prev) => [...prev.slice(-4), { technique: t.technique, position: t.position }]);
-      } catch (err: any) {
-        clearInterval(stepInterval);
-        setCurrentStep('');
-        errors++;
-        setLastError(`${t.technique}: ${err?.message || 'Unknown error'}`);
-      }
-      setGamesProgress({ done: i + 1, total: techniques.length, errors });
-      await new Promise((r) => setTimeout(r, 1200));
+      clearInterval(stepInterval);
+      setCurrentTechnique('');
+      setCurrentStep('');
+
+      saveSyncedGames(results);
+      setGamesSyncedCount(Object.keys(results).length);
+      setGamesStatus(errors === techniques.length ? 'error' : 'done');
+    } catch (err: any) {
+      clearInterval(stepInterval);
+      setCurrentTechnique('');
+      setCurrentStep('');
+      setLastError(err?.message || 'Backend error — server may be unavailable');
+      setGamesStatus('error');
     }
 
-    setCurrentTechnique('');
-    setCurrentStep('');
-    setGamesSyncedCount(Object.keys(getSyncedGames()).length);
-    setGamesStatus(errors === techniques.length ? 'error' : 'done');
     onSyncComplete();
   };
 
@@ -219,6 +205,25 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
 
         <div className="p-6 space-y-8">
 
+          {/* ── Backend Status Indicator ── */}
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            {backendOk === null && (
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Checking server…
+              </span>
+            )}
+            {backendOk === true && (
+              <span className="text-emerald-500 flex items-center gap-1.5">
+                🟢 Connected to server
+              </span>
+            )}
+            {backendOk === false && (
+              <span className="text-destructive flex items-center gap-1.5">
+                🔴 Server unavailable
+              </span>
+            )}
+          </div>
+
           {/* ── Phase 1: YouTube Videos ── */}
           <section className="space-y-4">
             <div className="flex items-center gap-3">
@@ -237,31 +242,8 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
               {ytStatus === 'error' && <AlertCircle className="w-4 h-4 text-destructive ml-auto" />}
             </div>
 
-            {/* YT API Key */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Key className="w-3 h-3" /> YouTube Data API v3 Key
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type={showYtKey ? 'text' : 'password'}
-                  value={ytKeyInput}
-                  onChange={(e) => setYtKeyInput(e.target.value)}
-                  placeholder="AIza..."
-                  className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary transition-colors"
-                  disabled={isRunning}
-                />
-                <button onClick={() => setShowYtKey(!showYtKey)} className="px-3 border border-border rounded-lg text-xs text-muted-foreground hover:bg-muted transition-colors" disabled={isRunning}>
-                  {showYtKey ? 'Hide' : 'Show'}
-                </button>
-                <button onClick={handleSaveYtKey} disabled={!ytKeyInput || ytKeyInput === ytKey || isRunning} className="px-3 bg-primary/10 border border-primary/30 rounded-lg text-xs font-semibold text-primary hover:bg-primary/20 transition-colors disabled:opacity-40">
-                  Save
-                </button>
-              </div>
-            </div>
-
             {/* Quota tier selector */}
-            {ytStatus === 'idle' && ytKey && (
+            {ytStatus === 'idle' && (
               <div className="space-y-1.5">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quota Usage</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -310,7 +292,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
                 <>
                   <button
                     onClick={handleSyncYouTube}
-                    disabled={!ytKey || isRunning}
+                    disabled={!backendOk || isRunning}
                     className="flex-1 flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl py-2.5 text-sm font-bold hover:bg-red-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -384,32 +366,6 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
               )}
             </div>
 
-            {/* Claude API Key */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Key className="w-3 h-3" /> Anthropic API Key
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type={showClaudeKey ? 'text' : 'password'}
-                  value={claudeKeyInput}
-                  onChange={(e) => setClaudeKeyInput(e.target.value)}
-                  placeholder="sk-ant-..."
-                  className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary transition-colors"
-                  disabled={isRunning}
-                />
-                <button onClick={() => setShowClaudeKey(!showClaudeKey)} className="px-3 border border-border rounded-lg text-xs text-muted-foreground hover:bg-muted transition-colors" disabled={isRunning}>
-                  {showClaudeKey ? 'Hide' : 'Show'}
-                </button>
-                <button onClick={handleSaveClaudeKey} disabled={!claudeKeyInput || claudeKeyInput === claudeKey || isRunning} className="px-3 bg-primary/10 border border-primary/30 rounded-lg text-xs font-semibold text-primary hover:bg-primary/20 transition-colors disabled:opacity-40">
-                  Save
-                </button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Uses <span className="font-mono text-primary">claude-haiku-4-5</span> — fast & cheap (~$0.01 for all techniques)
-              </p>
-            </div>
-
             {/* Games Progress + live coach feed */}
             {(gamesStatus === 'running' || gamesStatus === 'done') && (
               <div className="space-y-3">
@@ -450,7 +406,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
                 <>
                   <button
                     onClick={handleGenerateGames}
-                    disabled={!claudeKey || isRunning}
+                    disabled={!backendOk || isRunning}
                     className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Sparkles className="w-4 h-4" />
@@ -469,7 +425,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
           </section>
 
           <p className="text-xs text-muted-foreground text-center">
-            Keys are stored locally in your browser only
+            API keys are managed securely on the server
           </p>
         </div>
       </div>
