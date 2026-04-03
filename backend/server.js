@@ -89,50 +89,68 @@ app.get('/api/youtube/search', async (req, res) => {
   }
 });
 
-// ─── YouTube Crawl (broad BJJ search) ─────────────────────────────────────────
+// ─── YouTube: Search per technique (SSE stream) ───────────────────────────────
 
-app.post('/api/youtube/crawl', async (req, res) => {
-  const { queries } = req.body;
-  if (!Array.isArray(queries) || queries.length === 0) {
-    return res.status(400).json({ error: 'Missing queries array' });
+app.post('/api/youtube/search-techniques', async (req, res) => {
+  const { techniques, maxResults = 5 } = req.body;
+  if (!Array.isArray(techniques) || techniques.length === 0) {
+    return res.status(400).json({ error: 'Missing techniques array' });
   }
   if (!YT_KEY) return res.status(500).json({ error: 'YouTube API key not configured on server' });
 
-  const seen = new Set();
-  const all = [];
-  const errors = [];
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
 
-  for (const query of queries) {
+  const results = {};
+  let errors = 0;
+
+  for (let i = 0; i < techniques.length; i++) {
+    const t = techniques[i];
+    const key = `${t.position}::${t.technique}`;
+    const query = `${t.technique} ${t.position} no-gi bjj`;
+
+    res.write(`data: ${JSON.stringify({ type: 'progress', done: i, total: techniques.length, technique: t.technique, position: t.position })}\n\n`);
+
     try {
       const params = new URLSearchParams({
         part: 'snippet', q: query, type: 'video',
-        maxResults: '50', relevanceLanguage: 'en', key: YT_KEY,
+        maxResults: String(maxResults), relevanceLanguage: 'en', key: YT_KEY,
       });
       const r = await fetch(`${YOUTUBE_API_BASE}/search?${params}`);
       const data = await r.json();
+
       if (!r.ok) {
-        errors.push({ query, error: data?.error?.message });
-        if (r.status === 400 || r.status === 403) break; // auth error — stop
+        errors++;
+        res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: data?.error?.message || `HTTP ${r.status}` })}\n\n`);
+        if (r.status === 403) break; // quota exceeded — stop early
         continue;
       }
-      for (const item of (data.items || [])) {
-        if (!item.id?.videoId || seen.has(item.id.videoId)) continue;
-        seen.add(item.id.videoId);
-        all.push({
+
+      const videos = (data.items || [])
+        .filter(item => item.id?.videoId)
+        .map((item, idx) => ({
           title: item.snippet.title,
           url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
           videoId: item.id.videoId,
           creator: item.snippet.channelTitle,
-          stars: 3,
-        });
+          stars: Math.max(1, maxResults - idx),
+        }));
+
+      if (videos.length > 0) {
+        results[key] = videos;
+        res.write(`data: ${JSON.stringify({ type: 'result', key, videos })}\n\n`);
       }
     } catch (err) {
-      errors.push({ query, error: err.message });
+      errors++;
+      res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: err.message })}\n\n`);
     }
-    await new Promise(r => setTimeout(r, 150));
+
+    await new Promise(r => setTimeout(r, 200));
   }
 
-  res.json({ videos: all, errors, total: all.length });
+  res.write(`data: ${JSON.stringify({ type: 'done', results, errors, total: techniques.length })}\n\n`);
+  res.end();
 });
 
 // ─── Claude: Generate game for one technique ──────────────────────────────────

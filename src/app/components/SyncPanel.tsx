@@ -1,24 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, CheckCircle2, AlertCircle, Loader2, Trash2, Sparkles, RefreshCw } from 'lucide-react';
 import {
-  matchVideosToTechnique,
   getSyncedVideos,
   saveSyncedVideos,
   clearSyncedVideos,
-  clearVideoPool,
-  getVideoPool,
-  saveVideoPool,
-  getSyncedKey,
-  BJJ_SEARCH_QUERIES_TIER1,
-  BJJ_SEARCH_QUERIES,
-  YouTubeSearchResult,
 } from '../utils/youtubeApi';
 import {
   getSyncedGames,
   saveSyncedGames,
   clearSyncedGames,
 } from '../utils/claudeApi';
-import { crawlYouTubeViaBackend, generateGamesBatchViaBackend, isBackendConfigured } from '../utils/backendApi';
+import { searchTechniquesViaBackend, generateGamesBatchViaBackend, isBackendConfigured } from '../utils/backendApi';
 import { techniques } from '../data/techniques';
 
 interface SyncPanelProps {
@@ -46,9 +38,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
   const [gamesStatus, setGamesStatus] = useState<PhaseStatus>('idle');
   const [ytProgress, setYtProgress] = useState<PhaseProgress>({ done: 0, total: 0, errors: 0 });
   const [gamesProgress, setGamesProgress] = useState<PhaseProgress>({ done: 0, total: 0, errors: 0 });
-  const [poolCount, setPoolCount] = useState(getVideoPool().length);
   const [ytSyncedCount, setYtSyncedCount] = useState(Object.keys(getSyncedVideos()).length);
-  const [quotaTier, setQuotaTier] = useState<'eco' | 'full'>('eco');
   const [gamesSyncedCount, setGamesSyncedCount] = useState(Object.keys(getSyncedGames()).length);
   const [ytError, setYtError] = useState('');
   const [lastError, setLastError] = useState('');
@@ -66,44 +56,33 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
     abortRef.current = false;
     setYtStatus('running');
     setYtError('');
-    const queries = quotaTier === 'eco' ? BJJ_SEARCH_QUERIES_TIER1 : BJJ_SEARCH_QUERIES;
-    setYtProgress({ done: 0, total: queries.length, errors: 0 });
+    setCurrentTechnique('');
+    setYtProgress({ done: 0, total: techniques.length, errors: 0 });
 
-    const existingPool = getVideoPool();
-    let pool: YouTubeSearchResult[] = existingPool.length > 0 && ytSyncedCount > 0 ? existingPool : [];
-
-    if (pool.length === 0) {
-      try {
-        pool = await crawlYouTubeViaBackend(queries, (done, total, videoCount) => {
-          setYtProgress({ done, total, errors: 0 });
-          setPoolCount(videoCount);
-        });
-      } catch (err: any) {
-        setYtError(err?.message || 'Server error');
-        setYtStatus('error');
-        return;
-      }
-      if (abortRef.current) { setYtStatus('idle'); return; }
-      if (pool.length === 0) {
-        setYtError('No videos found — quota may be exhausted (resets midnight PT)');
-        setYtStatus('error');
-        return;
-      }
-      saveVideoPool(pool);
+    let errors = 0;
+    try {
+      const results = await searchTechniquesViaBackend(
+        techniques.map(t => ({ technique: t.technique, position: t.position, level: t.level })),
+        (done, total, technique, position) => {
+          setCurrentTechnique(`${technique} — ${position}`);
+          setYtProgress({ done, total, errors });
+        },
+        (technique, error) => {
+          errors++;
+          setYtError(`${technique}: ${error}`);
+          setYtProgress(prev => ({ ...prev, errors }));
+        },
+        abortRef
+      );
+      setCurrentTechnique('');
+      saveSyncedVideos(results);
+      setYtSyncedCount(Object.keys(results).length);
+      setYtStatus(errors === techniques.length ? 'error' : 'done');
+    } catch (err: any) {
+      setCurrentTechnique('');
+      setYtError(err?.message || 'Server error');
+      setYtStatus('error');
     }
-
-    saveVideoPool(pool);
-    setPoolCount(pool.length);
-
-    const synced: Record<string, any[]> = {};
-    for (const t of techniques) {
-      const key = getSyncedKey(t.technique, t.position);
-      const matches = matchVideosToTechnique(t.technique, t.position, pool, 5);
-      if (matches.length > 0) synced[key] = matches;
-    }
-    saveSyncedVideos(synced);
-    setYtSyncedCount(Object.keys(synced).length);
-    setYtStatus('done');
     onSyncComplete();
   };
 
@@ -155,7 +134,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
   };
 
   const handleStop = () => { abortRef.current = true; };
-  const handleClearYt = () => { clearSyncedVideos(); clearVideoPool(); setYtSyncedCount(0); setPoolCount(0); onSyncComplete(); };
+  const handleClearYt = () => { clearSyncedVideos(); setYtSyncedCount(0); onSyncComplete(); };
   const handleClearGames = () => { clearSyncedGames(); setGamesSyncedCount(0); onSyncComplete(); };
 
   const bothDone = ytStatus === 'done' && gamesStatus === 'done';
@@ -251,9 +230,9 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
               <div className="flex-1">
                 <p className="text-sm font-bold">Find Videos on YouTube</p>
                 <p className="text-[11px] text-muted-foreground">
-                  {poolCount > 0
-                    ? `${poolCount} videos found · ${ytSyncedCount} techniques assigned`
-                    : 'Coach searches YouTube for BJJ content matching your techniques'}
+                  {ytSyncedCount > 0
+                    ? `${ytSyncedCount} / ${techniques.length} techniques have videos`
+                    : 'Searches YouTube once per technique — precise matches only'}
                 </p>
               </div>
               {ytStatus === 'error' && <AlertCircle className="w-4 h-4 text-destructive shrink-0" />}
@@ -261,22 +240,21 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
 
             <div className="p-4 space-y-3">
               {ytStatus === 'idle' && (
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => setQuotaTier('eco')}
-                    className={`p-2.5 rounded-lg border text-left transition-all ${quotaTier === 'eco' ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/40'}`}>
-                    <p className="text-xs font-bold">Quick scan</p>
-                    <p className="text-[10px] text-muted-foreground">10 searches · ~500 videos</p>
-                  </button>
-                  <button onClick={() => setQuotaTier('full')}
-                    className={`p-2.5 rounded-lg border text-left transition-all ${quotaTier === 'full' ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/40'}`}>
-                    <p className="text-xs font-bold">Deep scan</p>
-                    <p className="text-[10px] text-muted-foreground">30 searches · ~1,500 videos</p>
-                  </button>
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  The coach searches YouTube for <span className="font-bold text-foreground">{techniques.length} techniques</span> individually — each video is matched to the exact technique, not guessed from a broad pool.
+                </p>
               )}
 
               {(ytStatus === 'running' || ytStatus === 'done' || ytStatus === 'error') && (
-                <ProgressBar progress={ytProgress} status={ytStatus} label={`searches · ${poolCount} videos`} />
+                <div className="space-y-3">
+                  <ProgressBar progress={ytProgress} status={ytStatus} label="techniques searched" />
+                  {ytStatus === 'running' && currentTechnique && (
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center gap-2">
+                      <Loader2 className="w-3 h-3 text-primary animate-spin shrink-0" />
+                      <span className="text-xs font-bold text-primary truncate">Searching: {currentTechnique}</span>
+                    </div>
+                  )}
+                </div>
               )}
               {ytError && (
                 <p className="text-xs text-destructive flex items-start gap-1.5 bg-destructive/5 border border-destructive/20 rounded-lg p-2.5">

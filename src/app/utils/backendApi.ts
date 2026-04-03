@@ -25,23 +25,53 @@ export const searchYouTubeViaBackend = async (
   return res.json();
 };
 
-export const crawlYouTubeViaBackend = async (
-  queries: string[],
-  onProgress: (done: number, total: number, videoCount: number) => void
-): Promise<any[]> => {
-  // Send all queries at once — backend handles the crawl
-  const res = await fetch(`${BACKEND_URL}/api/youtube/crawl`, {
+export const searchTechniquesViaBackend = async (
+  techniques: { technique: string; position: string; level: string }[],
+  onProgress: (done: number, total: number, technique: string, position: string) => void,
+  onError: (technique: string, error: string) => void,
+  abortRef: { current: boolean }
+): Promise<Record<string, any[]>> => {
+  const res = await fetch(`${BACKEND_URL}/api/youtube/search-techniques`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ queries }),
+    body: JSON.stringify({ techniques, maxResults: 5 }),
   });
   if (!res.ok) {
     const err = await res.json();
     throw new Error(err.error || `HTTP ${res.status}`);
   }
-  const data = await res.json();
-  onProgress(queries.length, queries.length, data.total);
-  return data.videos;
+
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let results: Record<string, any[]> = {};
+
+  while (true) {
+    if (abortRef.current) break;
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const text = decoder.decode(value);
+    const lines = text.split('\n').filter(l => l.startsWith('data: '));
+
+    for (const line of lines) {
+      try {
+        const event = JSON.parse(line.slice(6));
+        if (event.type === 'progress') {
+          onProgress(event.done, event.total, event.technique, event.position);
+        } else if (event.type === 'error') {
+          onError(event.technique, event.error);
+        } else if (event.type === 'result') {
+          results[event.key] = event.videos;
+        } else if (event.type === 'done') {
+          results = event.results;
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }
+
+  return results;
 };
 
 // ─── Claude via backend ────────────────────────────────────────────────────────
