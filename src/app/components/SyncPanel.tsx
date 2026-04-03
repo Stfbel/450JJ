@@ -337,6 +337,18 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
                 </div>
               )}
 
+              {gamesStatus === 'error' && (
+                <div className="space-y-2">
+                  <ProgressBar progress={gamesProgress} status={gamesStatus} label="games built" />
+                  {lastError && (
+                    <p className="text-xs text-destructive flex items-start gap-1.5 bg-destructive/5 border border-destructive/20 rounded-lg p-2.5">
+                      <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
+                      {lastError}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {(gamesStatus === 'running' || gamesStatus === 'done') && (
                 <div className="space-y-3">
                   <ProgressBar progress={gamesProgress} status={gamesStatus} label="games built" />
@@ -365,7 +377,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
                     </div>
                   )}
 
-                  {lastError && gamesStatus === 'running' && (
+                  {lastError && (
                     <p className="text-[10px] text-destructive/70 font-mono truncate">⚠ {lastError}</p>
                   )}
                 </div>
