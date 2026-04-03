@@ -10,7 +10,8 @@ import {
   saveSyncedGames,
   clearSyncedGames,
 } from '../utils/claudeApi';
-import { searchTechniquesViaBackend, generateGamesBatchViaBackend, isBackendConfigured } from '../utils/backendApi';
+import { searchTechniquesViaBackend, generateGamesBatchViaBackend, isBackendConfigured, pushSharedVideos, pushSharedGames } from '../utils/backendApi';
+import { isAdminActive, getSyncToken } from '../utils/libraryStorage';
 import { techniques } from '../data/techniques';
 
 interface SyncPanelProps {
@@ -80,6 +81,11 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
       saveSyncedVideos(results);
       setYtSyncedCount(Object.keys(results).length);
       setYtStatus(errors === techniques.length ? 'error' : 'done');
+      // Push to shared backend so all users benefit
+      const token = getSyncToken();
+      if (token && isAdminActive() && Object.keys(results).length > 0) {
+        pushSharedVideos(results, token).catch(() => {}); // silent fail
+      }
     } catch (err: any) {
       setCurrentTechnique('');
       setYtError(err?.message || 'Server error');
@@ -125,6 +131,11 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
       saveSyncedGames(results);
       setGamesSyncedCount(Object.keys(results).length);
       setGamesStatus(errors === techniques.length ? 'error' : 'done');
+      // Push to shared backend so all users benefit
+      const token = getSyncToken();
+      if (token && isAdminActive() && Object.keys(results).length > 0) {
+        pushSharedGames(results, token).catch(() => {}); // silent fail
+      }
     } catch (err: any) {
       clearInterval(stepInterval);
       setCurrentTechnique('');
@@ -383,7 +394,9 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
           </div>
 
           <p className="text-[10px] text-muted-foreground text-center">
-            Your coach runs on a secure server · No API keys needed
+            {isAdminActive() && getSyncToken()
+              ? '🌐 Admin mode — synced data is shared with all users'
+              : 'Your coach runs on a secure server · No API keys needed'}
           </p>
         </div>
       </div>

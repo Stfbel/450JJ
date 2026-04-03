@@ -2,6 +2,25 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { google } from 'googleapis';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = join(__dirname, 'data');
+const VIDEOS_FILE = join(DATA_DIR, 'videos.json');
+const GAMES_FILE = join(DATA_DIR, 'games.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// In-memory store (survives requests, resets on redeploy)
+let sharedVideos = {};
+let sharedGames = {};
+
+// Load from file on startup
+try { sharedVideos = JSON.parse(fs.readFileSync(VIDEOS_FILE, 'utf8')); } catch {}
+try { sharedGames = JSON.parse(fs.readFileSync(GAMES_FILE, 'utf8')); } catch {}
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -11,6 +30,7 @@ const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 const YT_KEY = process.env.YOUTUBE_API_KEY;
 const CLAUDE_KEY = process.env.CLAUDE_API_KEY;
+const SYNC_TOKEN = process.env.SYNC_TOKEN;
 
 // ─── Google OAuth2 (kept for future transcript feature) ───────────────────────
 
@@ -54,6 +74,35 @@ app.get('/', (req, res) => {
     youtube: !!YT_KEY,
     claude: !!CLAUDE_KEY,
   });
+});
+
+// ─── Shared data — public read, token-protected write ─────────────────────────
+
+app.get('/api/data/videos', (req, res) => {
+  res.json(sharedVideos);
+});
+
+app.get('/api/data/games', (req, res) => {
+  res.json(sharedGames);
+});
+
+const requireSyncToken = (req, res, next) => {
+  if (!SYNC_TOKEN) return res.status(503).json({ error: 'SYNC_TOKEN not configured on server' });
+  const auth = req.headers['authorization'] || '';
+  if (auth !== `Bearer ${SYNC_TOKEN}`) return res.status(401).json({ error: 'Invalid sync token' });
+  next();
+};
+
+app.post('/api/data/videos', requireSyncToken, (req, res) => {
+  sharedVideos = req.body;
+  try { fs.writeFileSync(VIDEOS_FILE, JSON.stringify(sharedVideos)); } catch {}
+  res.json({ ok: true, count: Object.keys(sharedVideos).length });
+});
+
+app.post('/api/data/games', requireSyncToken, (req, res) => {
+  sharedGames = req.body;
+  try { fs.writeFileSync(GAMES_FILE, JSON.stringify(sharedGames)); } catch {}
+  res.json({ ok: true, count: Object.keys(sharedGames).length });
 });
 
 // ─── YouTube Search ────────────────────────────────────────────────────────────

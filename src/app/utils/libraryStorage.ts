@@ -5,6 +5,11 @@ const SETS_KEY = 'bjj-sets';
 const CLASSES_KEY = 'bjj-classes';
 const ADMIN_PIN_KEY = 'bjj-admin-pin';
 const ADMIN_ACTIVE_KEY = 'bjj-admin-active';
+const SYNC_TOKEN_KEY = 'bjj-sync-token';
+
+export const getSyncToken = (): string => localStorage.getItem(SYNC_TOKEN_KEY) || '';
+export const setSyncToken = (token: string) => localStorage.setItem(SYNC_TOKEN_KEY, token);
+export const clearSyncToken = () => localStorage.removeItem(SYNC_TOKEN_KEY);
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 

@@ -74,6 +74,52 @@ export const searchTechniquesViaBackend = async (
   return results;
 };
 
+// ─── Shared data (videos + games stored on Railway for all users) ─────────────
+
+export const fetchSharedVideos = async (): Promise<Record<string, any[]>> => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/data/videos`, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return {};
+    return res.json();
+  } catch {
+    return {};
+  }
+};
+
+export const fetchSharedGames = async (): Promise<Record<string, any>> => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/data/games`, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return {};
+    return res.json();
+  } catch {
+    return {};
+  }
+};
+
+export const pushSharedVideos = async (data: Record<string, any[]>, token: string): Promise<void> => {
+  const res = await fetch(`${BACKEND_URL}/api/data/videos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+};
+
+export const pushSharedGames = async (data: Record<string, any>, token: string): Promise<void> => {
+  const res = await fetch(`${BACKEND_URL}/api/data/games`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+};
+
 // ─── Claude via backend ────────────────────────────────────────────────────────
 
 export const generateGameViaBackend = async (

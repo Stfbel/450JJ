@@ -8,8 +8,9 @@ import { NotebookDrawer } from '../components/NotebookDrawer';
 import { CommandPalette } from '../components/CommandPalette';
 import { Tooltip } from '../components/Tooltip';
 import { SyncPanel } from '../components/SyncPanel';
-import { getSyncedVideos, getSyncedKey } from '../utils/youtubeApi';
-import { getSyncedGames } from '../utils/claudeApi';
+import { getSyncedVideos, getSyncedKey, saveSyncedVideos } from '../utils/youtubeApi';
+import { getSyncedGames, saveSyncedGames } from '../utils/claudeApi';
+import { fetchSharedVideos, fetchSharedGames } from '../utils/backendApi';
 import {
   getFavorites,
   toggleFavorite as toggleFavoriteStorage,
@@ -40,6 +41,22 @@ export function TechniqueLibrary({ theme, onToggleTheme }: TechniqueLibraryProps
   const [showGameGuide, setShowGameGuide] = useState(false);
   const [syncedVideos, setSyncedVideos] = useState(getSyncedVideos);
   const [syncedGames, setSyncedGames] = useState(getSyncedGames);
+
+  // Load shared data from backend on mount (all users get admin's synced content)
+  useEffect(() => {
+    fetchSharedVideos().then(data => {
+      if (Object.keys(data).length > 0) {
+        saveSyncedVideos(data);
+        setSyncedVideos(data);
+      }
+    });
+    fetchSharedGames().then(data => {
+      if (Object.keys(data).length > 0) {
+        saveSyncedGames(data);
+        setSyncedGames(data);
+      }
+    });
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {

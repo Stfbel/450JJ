@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Lock, Eye, EyeOff, LogOut, Shield, Database, Trash2 } from 'lucide-react';
+import { Lock, Eye, EyeOff, LogOut, Shield, Database, Trash2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   loginAdmin,
@@ -11,6 +11,9 @@ import {
   getClasses,
   getAdminPin,
   setAdminPin,
+  getSyncToken,
+  setSyncToken,
+  clearSyncToken,
 } from '../utils/libraryStorage';
 
 function LoginForm({ onLogin }: { onLogin: () => void }) {
@@ -88,6 +91,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const navigate = useNavigate();
   const [showChangePinForm, setShowChangePinForm] = useState(false);
   const [newPin, setNewPin] = useState('');
+  const [syncToken, setSyncTokenState] = useState(getSyncToken());
+  const [showSyncToken, setShowSyncToken] = useState(false);
 
   const videos = getVideos();
   const sets = getSets();
@@ -199,6 +204,51 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             Admin mode allows you to add videos, create collections, and plan class sessions.
           </p>
         )}
+      </div>
+
+      {/* Sync Token */}
+      <div className="bg-card border border-border rounded-xl p-5 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Globe className="w-4 h-4 text-primary" />
+          <h2 className="font-semibold text-sm">Shared Sync Token</h2>
+          {syncToken && <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5 font-bold uppercase tracking-wider">Active</span>}
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">
+          When set, your sync results (videos + games) are pushed to the server and shared with all users automatically.
+          Get this token from your Railway environment variables (<code className="text-[10px] bg-muted px-1 rounded">SYNC_TOKEN</code>).
+        </p>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input
+              type={showSyncToken ? 'text' : 'password'}
+              value={syncToken}
+              onChange={(e) => setSyncTokenState(e.target.value)}
+              placeholder="Paste SYNC_TOKEN value..."
+              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowSyncToken(!showSyncToken)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showSyncToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          <button
+            onClick={() => { setSyncToken(syncToken); toast.success('Sync token saved'); }}
+            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all"
+          >
+            Save
+          </button>
+          {getSyncToken() && (
+            <button
+              onClick={() => { clearSyncToken(); setSyncTokenState(''); toast.info('Sync token removed'); }}
+              className="px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-destructive hover:border-destructive/40 transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Danger zone */}
