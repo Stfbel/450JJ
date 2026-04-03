@@ -279,20 +279,21 @@ export function TechniqueLibrary({ theme, onToggleTheme }: TechniqueLibraryProps
                   )}
                 </button>
               </Tooltip>
-              <Tooltip content="Sync videos & generate games">
+              <Tooltip content="AI BJJ Coach">
                 <button
                   onClick={() => setShowSyncPanel(true)}
-                  className={`px-2 sm:px-3 py-2 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  className={`px-2.5 sm:px-3 py-2 rounded-lg border transition-all flex items-center gap-1.5 ${
                     Object.keys(syncedGames).length > 0
                       ? 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20'
                       : Object.keys(syncedVideos).length > 0
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/20'
-                      : 'bg-card border-border hover:border-primary/50'
+                      : 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
                   }`}
+                  aria-label="AI BJJ Coach"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">
-                    {Object.keys(syncedGames).length > 0 ? 'AI Coach' : Object.keys(syncedVideos).length > 0 ? 'Videos ✓' : 'Sync'}
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    AI Coach
                   </span>
                 </button>
               </Tooltip>
