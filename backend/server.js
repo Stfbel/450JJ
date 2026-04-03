@@ -209,37 +209,23 @@ app.post('/api/claude/generate-game', async (req, res) => {
   if (!technique || !position) return res.status(400).json({ error: 'Missing technique or position' });
   if (!CLAUDE_KEY) return res.status(500).json({ error: 'Claude API key not configured on server' });
 
-  const prompt = `You are a No-Gi BJJ instructor designing a competitive positional game for class.
-
-Technique: "${technique}"
-Position: "${position}"
-Student Level: ${level || 'Mixed'}
-
-Create a 2-player positional game that trains this technique. One player is on TOP, one is on BOTTOM.
-
-Respond with a JSON object only, no markdown, no explanation:
-{
-  "situation": "<one sentence: the starting scenario/setup>",
-  "topObjective": "<what the TOP player must accomplish — be specific, 1-2 sentences>",
-  "bottomObjective": "<what the BOTTOM player must accomplish — be specific, 1-2 sentences>",
-  "coachCue": "<single most critical coaching point that separates good from sloppy execution>",
-  "duration": "<e.g., '3-min rounds, first to 3 reps'>",
-  "scoring": "<e.g., '1pt per successful finish, 2pt for clean setup + finish'>"
-}
-
-Rules:
-- No gi grips (no collar, no sleeve, no lapel)
-- Winning condition must reward correct technique, not just athleticism
-- Keep rules simple enough to explain in 60 seconds`;
+  const prompt = `No-Gi BJJ. Technique: "${technique}" from "${position}". Level: ${level || 'Mixed'}.
+Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required:
+{"positional":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","objective":"","rules":"","coachCue":"","duration":""}}
+No gi grips. Be specific and actionable.`;
 
   try {
-    const text = await callClaude(prompt);
+    const text = await callClaude(prompt, 3, 2048);
     try {
       res.json(JSON.parse(text));
     } catch {
       const match = text.match(/\{[\s\S]*\}/);
-      if (match) res.json(JSON.parse(match[0]));
-      else res.status(500).json({ error: 'Invalid JSON from Claude', raw: text });
+      if (match) {
+        try { res.json(JSON.parse(match[0])); }
+        catch { res.status(500).json({ error: 'Invalid JSON from Claude', raw: text.slice(0, 200) }); }
+      } else {
+        res.status(500).json({ error: 'Invalid JSON from Claude', raw: text.slice(0, 200) });
+      }
     }
   } catch (err) {
     res.status(500).json({ error: err.message });

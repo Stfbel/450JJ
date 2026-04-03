@@ -145,43 +145,32 @@ export const generateGamesBatchViaBackend = async (
   onError: (technique: string, error: string) => void,
   abortRef: { current: boolean }
 ): Promise<Record<string, any>> => {
-  const res = await fetch(`${BACKEND_URL}/api/claude/generate-games-batch`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ techniques }),
-  });
+  // Call one technique at a time — avoids Railway long-connection timeout
+  const results: Record<string, any> = {};
 
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || `HTTP ${res.status}`);
-  }
-
-  // Parse SSE stream
-  const reader = res.body!.getReader();
-  const decoder = new TextDecoder();
-  let results: Record<string, any> = {};
-
-  while (true) {
+  for (let i = 0; i < techniques.length; i++) {
     if (abortRef.current) break;
-    const { done, value } = await reader.read();
-    if (done) break;
+    const t = techniques[i];
+    const key = `${t.position}::${t.technique}`;
 
-    const text = decoder.decode(value);
-    const lines = text.split('\n').filter(l => l.startsWith('data: '));
+    onProgress(i, techniques.length, t.technique, t.position);
 
-    for (const line of lines) {
-      try {
-        const event = JSON.parse(line.slice(6));
-        if (event.type === 'progress') {
-          onProgress(event.done, event.total, event.technique, event.position);
-        } else if (event.type === 'error') {
-          onError(event.technique, event.error);
-        } else if (event.type === 'done') {
-          results = event.results;
-        }
-      } catch {
-        // ignore parse errors
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/claude/generate-game`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ technique: t.technique, position: t.position, level: t.level }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        onError(t.technique, err.error || `HTTP ${res.status}`);
+        continue;
       }
+      const data = await res.json();
+      results[key] = data;
+    } catch (err: any) {
+      onError(t.technique, err?.message || 'Network error');
     }
   }
 
