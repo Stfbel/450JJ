@@ -37,6 +37,7 @@ export function TechniqueLibrary({ theme, onToggleTheme }: TechniqueLibraryProps
   const [showNotebookDrawer, setShowNotebookDrawer] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showSyncPanel, setShowSyncPanel] = useState(false);
+  const [showGameGuide, setShowGameGuide] = useState(false);
   const [syncedVideos, setSyncedVideos] = useState(getSyncedVideos);
   const [syncedGames, setSyncedGames] = useState(getSyncedGames);
 
@@ -449,6 +450,37 @@ export function TechniqueLibrary({ theme, onToggleTheme }: TechniqueLibraryProps
                   Clear All Filters
                 </button>
               )}
+            </div>
+          )}
+        </div>
+
+        {/* Game Types Guide */}
+        <div className="mb-4">
+          <button
+            onClick={() => setShowGameGuide(!showGameGuide)}
+            className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+          >
+            <span>Game Types Guide</span>
+            <span className="text-[10px]">{showGameGuide ? '▲' : '▼'}</span>
+          </button>
+          {showGameGuide && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 animate-in slide-in-from-top-2 duration-200">
+              {[
+                { emoji: '⚔️', key: 'Positional', color: 'sky',    desc: 'Two defined roles — Top vs Bottom. Each player has a specific objective. Rewards position control and role clarity.' },
+                { emoji: '🔒', key: 'Constraint', color: 'violet', desc: 'A specific restriction forces players to adapt. Develops creativity and removes crutch movements.' },
+                { emoji: '🤝', key: 'Grip Engagement', color: 'amber',  desc: 'Focus on underhooks, inside ties, wrist control, and head position. No-Gi fundamentals without submission finishes.' },
+                { emoji: '🌊', key: 'Continuous Flow', color: 'emerald', desc: 'Continuous chain of transitions — no stopping, no resets. Builds scramble comfort and positional flow.' },
+                { emoji: '🧩', key: 'Problem-Solving', color: 'orange', desc: 'No instruction given. Players must find their own solution. Ecological learning — develops self-discovery and decision-making.' },
+                { emoji: '🔬', key: 'Micro-Game', color: 'pink',   desc: 'Ultra-specific detail trained in isolation. One tiny element, simple rule, high repetition. Sharpens precision.' },
+                { emoji: '🏆', key: 'Competitive', color: 'primary', desc: 'Scoring format with win conditions. Replicates competitive pressure. Rewards correct technique under stress.' },
+              ].map(({ emoji, key, desc }) => (
+                <div key={key} className="bg-card border border-border rounded-xl p-3 space-y-1.5">
+                  <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <span>{emoji}</span> {key}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

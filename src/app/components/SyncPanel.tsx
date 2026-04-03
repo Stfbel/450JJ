@@ -24,12 +24,14 @@ interface PhaseProgress { done: number; total: number; errors: number; }
 const COACH_STEPS = [
   'Studying the technique…',
   'Identifying No-Gi grip points…',
-  'Designing the game situation…',
-  'Defining TOP player objective…',
-  'Defining BOTTOM player objective…',
-  'Writing the coaching cue…',
-  'Setting round duration & scoring…',
-  'Reviewing game structure…',
+  'Designing Positional game…',
+  'Adding constraint restriction…',
+  'Building Grip Engagement game…',
+  'Crafting Continuous Flow sequence…',
+  'Writing Problem-Solving scenario…',
+  'Detailing Micro-Game cue…',
+  'Setting Competitive scoring…',
+  'Reviewing all 7 game types…',
 ];
 
 export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
@@ -189,7 +191,7 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
             <div className="space-y-2">
               {[
                 { icon: '🎥', text: 'Search YouTube for the best BJJ videos matching each of your 81 techniques' },
-                { icon: '🧠', text: 'Study each technique and design a custom 2-player competitive game' },
+                { icon: '🧠', text: 'Study each technique and design 7 custom training games (ecological approach)' },
                 { icon: '⬆️', text: 'Write specific TOP player objectives for each game' },
                 { icon: '⬇️', text: 'Write specific BOTTOM player objectives for each game' },
                 { icon: '📣', text: 'Craft one precise coaching cue per technique' },
@@ -297,8 +299,8 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
                 <p className="text-sm font-bold">Build Competitive Games</p>
                 <p className="text-[11px] text-muted-foreground">
                   {gamesSyncedCount > 0
-                    ? `${gamesSyncedCount} / ${techniques.length} games built`
-                    : 'Coach studies each technique and designs a game with top/bottom objectives'}
+                    ? `${gamesSyncedCount} / ${techniques.length} techniques — 7 games each`
+                    : 'Coach designs 7 game types per technique — ecological approach'}
                 </p>
               </div>
               {gamesStatus === 'error' && <AlertCircle className="w-4 h-4 text-destructive shrink-0" />}
@@ -306,11 +308,19 @@ export function SyncPanel({ onClose, onSyncComplete }: SyncPanelProps) {
 
             <div className="p-4 space-y-3">
               {gamesStatus === 'idle' && gamesSyncedCount === 0 && (
-                <div className="text-xs text-muted-foreground space-y-1.5">
-                  <p>For each of your <span className="font-bold text-foreground">{techniques.length} techniques</span>, the coach will:</p>
+                <div className="text-xs text-muted-foreground space-y-2">
+                  <p>For each of your <span className="font-bold text-foreground">{techniques.length} techniques</span>, the coach builds:</p>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 pl-1">
-                    {['Study the technique', 'Set No-Gi grips', 'Write TOP objective', 'Write BOTTOM objective', 'Craft coaching cue', 'Set scoring rules'].map(s => (
-                      <p key={s} className="flex items-center gap-1"><span className="text-primary">·</span> {s}</p>
+                    {[
+                      { e: '⚔️', l: 'Positional' },
+                      { e: '🔒', l: 'Constraint' },
+                      { e: '🤝', l: 'Grip Engagement' },
+                      { e: '🌊', l: 'Continuous Flow' },
+                      { e: '🧩', l: 'Problem-Solving' },
+                      { e: '🔬', l: 'Micro-Game' },
+                      { e: '🏆', l: 'Competitive' },
+                    ].map(({ e, l }) => (
+                      <p key={l} className="flex items-center gap-1.5"><span>{e}</span> {l}</p>
                     ))}
                   </div>
                 </div>

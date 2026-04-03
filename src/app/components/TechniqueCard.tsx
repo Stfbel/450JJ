@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Video as VideoIcon } from 'lucide-react';
-import { Technique } from '../data/techniques';
+import { Technique, GameType, GameVariant } from '../data/techniques';
 import { VideoItem } from './VideoItem';
 import { getNote, getTimestamps, saveTimestamp } from '../utils/storage';
 
@@ -17,6 +17,47 @@ interface TechniqueCardProps {
   ) => void;
 }
 
+const GAME_TABS: { key: GameType; label: string; short: string; emoji: string }[] = [
+  { key: 'positional',      label: 'Positional',  short: 'Pos',    emoji: '⚔️' },
+  { key: 'constraintBased', label: 'Constraint',  short: 'Constr', emoji: '🔒' },
+  { key: 'gripEngagement',  label: 'Grip',        short: 'Grip',   emoji: '🤝' },
+  { key: 'continuousFlow',  label: 'Flow',        short: 'Flow',   emoji: '🌊' },
+  { key: 'problemSolving',  label: 'Problem-Solve', short: 'Solve', emoji: '🧩' },
+  { key: 'microGame',       label: 'Micro-Game',  short: 'Micro',  emoji: '🔬' },
+  { key: 'competitive',     label: 'Competitive', short: 'Comp',   emoji: '🏆' },
+];
+
+function GameVariantDisplay({ variant }: { variant: GameVariant }) {
+  return (
+    <div className="space-y-2">
+      <div className="bg-primary/5 rounded-xl p-3 border border-primary/20">
+        <p className="text-[9px] text-primary uppercase font-bold tracking-wider mb-1">Setup</p>
+        <p className="text-xs text-foreground leading-relaxed">{variant.setup}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-sky-500/5 rounded-xl p-3 border border-sky-500/20">
+          <p className="text-[9px] text-sky-500 uppercase font-bold tracking-wider mb-1">Objective</p>
+          <p className="text-xs text-foreground leading-relaxed">{variant.objective}</p>
+        </div>
+        <div className="bg-violet-500/5 rounded-xl p-3 border border-violet-500/20">
+          <p className="text-[9px] text-violet-500 uppercase font-bold tracking-wider mb-1">Rules</p>
+          <p className="text-xs text-foreground leading-relaxed">{variant.rules}</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl p-3 border border-accent/20">
+          <p className="text-[9px] text-accent uppercase font-bold tracking-wider mb-1">Coach Cue</p>
+          <p className="text-xs text-foreground leading-relaxed font-medium">{variant.coachCue}</p>
+        </div>
+        <div className="bg-muted/50 rounded-xl p-3 border border-border">
+          <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Duration</p>
+          <p className="text-xs text-foreground leading-relaxed">{variant.duration}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TechniqueCard({
   technique,
   favorites,
@@ -25,35 +66,34 @@ export function TechniqueCard({
 }: TechniqueCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [timestamps, setTimestamps] = useState(getTimestamps);
+  const [activeGameType, setActiveGameType] = useState<GameType>('positional');
 
   const formatBadgeColor = (format: string) => {
     switch (format) {
-      case 'Gi':
-        return 'bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30';
-      case 'No-Gi':
-        return 'bg-primary/15 text-primary border-primary/30';
-      case 'Both':
-        return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
-      default:
-        return 'bg-muted text-muted-foreground border-border';
+      case 'Gi':    return 'bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30';
+      case 'No-Gi': return 'bg-primary/15 text-primary border-primary/30';
+      case 'Both':  return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
+      default:      return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const levelBadgeColor = (level: string) => {
     switch (level) {
-      case 'White':
-        return 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30';
-      case 'Blue':
-        return 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/30';
-      case 'Advanced':
-        return 'bg-primary/20 text-primary border-primary/40';
-      default:
-        return 'bg-muted text-muted-foreground border-border';
+      case 'White':    return 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30';
+      case 'Blue':     return 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/30';
+      case 'Advanced': return 'bg-primary/20 text-primary border-primary/40';
+      default:         return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const displayedVideos = isExpanded ? technique.videos : technique.videos.slice(0, 2);
   const hasMoreVideos = technique.videos.length > 2;
+
+  // Detect new 7-type game format
+  const gd = technique.gameData;
+  const hasNewFormat = !!(gd?.positional || gd?.constraintBased || gd?.gripEngagement ||
+    gd?.continuousFlow || gd?.problemSolving || gd?.microGame || gd?.competitive);
+  const activeVariant = gd?.[activeGameType] as GameVariant | undefined;
 
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden transition-all hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 group">
@@ -80,42 +120,78 @@ export function TechniqueCard({
           </div>
         </div>
 
-        {/* Info Grid */}
+        {/* Game Section */}
         <div className="grid grid-cols-1 gap-3 mb-4">
-          {technique.gameData ? (
+          {hasNewFormat ? (
             <>
-              {/* Situation */}
+              {/* Tab row */}
+              <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+                {GAME_TABS.map(tab => {
+                  const hasData = !!(gd?.[tab.key]);
+                  const isActive = activeGameType === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveGameType(tab.key)}
+                      disabled={!hasData}
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-all ${
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : hasData
+                          ? 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted'
+                          : 'opacity-30 cursor-not-allowed text-muted-foreground'
+                      }`}
+                    >
+                      <span>{tab.emoji}</span>
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="sm:hidden">{tab.short}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active variant content */}
+              {activeVariant ? (
+                <GameVariantDisplay variant={activeVariant} />
+              ) : (
+                <div className="bg-muted/30 rounded-xl p-4 border border-border text-center">
+                  <p className="text-xs text-muted-foreground">No data for this game type — rebuild games in AI Coach</p>
+                </div>
+              )}
+            </>
+          ) : gd?.situation ? (
+            // Legacy single-game format
+            <>
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-4 border border-primary/20">
                 <p className="text-[10px] text-primary uppercase font-bold tracking-wider mb-1.5 flex items-center gap-1.5">
                   <span className="w-1 h-1 rounded-full bg-primary"></span>
-                  Game · {technique.gameData.duration}
+                  Game · {gd.duration}
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">{technique.gameData.situation}</p>
+                <p className="text-sm text-foreground leading-relaxed">{gd.situation}</p>
               </div>
-              {/* Top / Bottom */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-sky-500/5 rounded-xl p-3 border border-sky-500/20">
                   <p className="text-[9px] text-sky-500 uppercase font-bold tracking-wider mb-1.5">▲ Top Player</p>
-                  <p className="text-xs text-foreground leading-relaxed">{technique.gameData.topObjective}</p>
+                  <p className="text-xs text-foreground leading-relaxed">{gd.topObjective}</p>
                 </div>
                 <div className="bg-amber-500/5 rounded-xl p-3 border border-amber-500/20">
                   <p className="text-[9px] text-amber-500 uppercase font-bold tracking-wider mb-1.5">▼ Bottom Player</p>
-                  <p className="text-xs text-foreground leading-relaxed">{technique.gameData.bottomObjective}</p>
+                  <p className="text-xs text-foreground leading-relaxed">{gd.bottomObjective}</p>
                 </div>
               </div>
-              {/* Scoring + Coach */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-muted/50 rounded-xl p-3 border border-border">
                   <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Scoring</p>
-                  <p className="text-xs text-foreground leading-relaxed">{technique.gameData.scoring}</p>
+                  <p className="text-xs text-foreground leading-relaxed">{gd.scoring}</p>
                 </div>
                 <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl p-3 border border-accent/20">
                   <p className="text-[9px] text-accent uppercase font-bold tracking-wider mb-1">Coach Cue</p>
-                  <p className="text-xs text-foreground leading-relaxed font-medium">{technique.gameData.coachCue}</p>
+                  <p className="text-xs text-foreground leading-relaxed font-medium">{gd.coachCue}</p>
                 </div>
               </div>
             </>
           ) : (
+            // Static fallback
             <>
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-4 border border-primary/20">
                 <p className="text-[10px] text-primary uppercase font-bold tracking-wider mb-1.5 flex items-center gap-1.5">
@@ -149,13 +225,9 @@ export function TechniqueCard({
               className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
             >
               {isExpanded ? (
-                <>
-                  Show Less <ChevronUp className="w-4 h-4" />
-                </>
+                <>Show Less <ChevronUp className="w-4 h-4" /></>
               ) : (
-                <>
-                  Show All {technique.videos.length} <ChevronDown className="w-4 h-4" />
-                </>
+                <>Show All {technique.videos.length} <ChevronDown className="w-4 h-4" /></>
               )}
             </button>
           )}
@@ -172,13 +244,7 @@ export function TechniqueCard({
               isFavorite={favorites.has(video.url)}
               onToggleFavorite={() => onToggleFavorite(video.url, video.title)}
               onSaveNote={(note) =>
-                onSaveNote(
-                  video.url,
-                  note,
-                  video.title,
-                  technique.technique,
-                  technique.position
-                )
+                onSaveNote(video.url, note, video.title, technique.technique, technique.position)
               }
               onSaveTimestamp={(seconds) => {
                 saveTimestamp(video.url, seconds);

@@ -6,13 +6,39 @@ export interface Video {
   timestamp?: number; // seconds — links directly to this moment in the video
 }
 
-export interface GameData {
-  situation: string;
-  topObjective: string;
-  bottomObjective: string;
+export interface GameVariant {
+  setup: string;
+  objective: string;
+  rules: string;
   coachCue: string;
   duration: string;
-  scoring: string;
+}
+
+export type GameType =
+  | 'positional'
+  | 'constraintBased'
+  | 'gripEngagement'
+  | 'continuousFlow'
+  | 'problemSolving'
+  | 'microGame'
+  | 'competitive';
+
+export interface GameData {
+  // New 7-type structure (AI Coach v2 — ecological approach)
+  positional?: GameVariant;
+  constraintBased?: GameVariant;
+  gripEngagement?: GameVariant;
+  continuousFlow?: GameVariant;
+  problemSolving?: GameVariant;
+  microGame?: GameVariant;
+  competitive?: GameVariant;
+  // Legacy single-game format (backward compat)
+  situation?: string;
+  topObjective?: string;
+  bottomObjective?: string;
+  coachCue?: string;
+  duration?: string;
+  scoring?: string;
 }
 
 export interface Technique {

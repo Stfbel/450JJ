@@ -219,11 +219,16 @@ app.post('/api/claude/generate-games-batch', async (req, res) => {
     res.write(`data: ${JSON.stringify({ type: 'progress', done: i, total: techniques.length, technique: t.technique, position: t.position })}\n\n`);
 
     try {
-      const prompt = `You are a No-Gi BJJ instructor. Create a 2-player positional game for "${t.technique}" from "${t.position}" (${t.level} level).
-Respond with JSON only: {"situation":"...","topObjective":"...","bottomObjective":"...","coachCue":"...","duration":"...","scoring":"..."}
-No gi grips. Rules explainable in 60 seconds.`;
+      const prompt = `You are an elite No-Gi BJJ coach using an ecological game-based approach.
+Technique: "${t.technique}" | Position: "${t.position}" | Level: ${t.level || 'Mixed'}
 
-      const text = await callClaude(prompt);
+Generate 7 training games. JSON only, no markdown, no explanation:
+{"positional":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"constraintBased":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"gripEngagement":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"continuousFlow":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"problemSolving":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"microGame":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"competitive":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."}}
+
+Rules: no gi grips, each game under 60 seconds to explain, be specific and actionable.
+Game types: positional=top/bottom roles, constraintBased=restriction forces adaptation, gripEngagement=underhooks/wrist/inside ties, continuousFlow=chain of transitions, problemSolving=no instruction/explore freely, microGame=ultra-specific single detail, competitive=scoring format.`;
+
+      const text = await callClaude(prompt, 3, 1500);
       let gameData;
       try { gameData = JSON.parse(text); }
       catch { const m = text.match(/\{[\s\S]*\}/); if (m) gameData = JSON.parse(m[0]); }
@@ -234,7 +239,7 @@ No gi grips. Rules explainable in 60 seconds.`;
       res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: err.message })}\n\n`);
     }
 
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 1500));
   }
 
   res.write(`data: ${JSON.stringify({ type: 'done', results, errors, total: techniques.length })}\n\n`);
@@ -243,7 +248,7 @@ No gi grips. Rules explainable in 60 seconds.`;
 
 // ─── Claude helper ─────────────────────────────────────────────────────────────
 
-async function callClaude(prompt, retries = 3) {
+async function callClaude(prompt, retries = 3, maxTokens = 512) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const res = await fetch(CLAUDE_API_URL, {
       method: 'POST',
@@ -254,7 +259,7 @@ async function callClaude(prompt, retries = 3) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
+        max_tokens: maxTokens,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
