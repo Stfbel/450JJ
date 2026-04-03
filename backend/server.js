@@ -268,21 +268,32 @@ app.post('/api/claude/generate-games-batch', async (req, res) => {
     res.write(`data: ${JSON.stringify({ type: 'progress', done: i, total: techniques.length, technique: t.technique, position: t.position })}\n\n`);
 
     try {
-      const prompt = `You are an elite No-Gi BJJ coach using an ecological game-based approach.
-Technique: "${t.technique}" | Position: "${t.position}" | Level: ${t.level || 'Mixed'}
+      const prompt = `No-Gi BJJ. Technique: "${t.technique}" from "${t.position}". Level: ${t.level || 'Mixed'}.
+Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required:
+{"positional":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","objective":"","rules":"","coachCue":"","duration":""}}
+No gi grips. Be specific and actionable.`;
 
-Generate 7 training games. JSON only, no markdown, no explanation:
-{"positional":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"constraintBased":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"gripEngagement":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"continuousFlow":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"problemSolving":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"microGame":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."},"competitive":{"setup":"...","objective":"...","rules":"...","coachCue":"...","duration":"..."}}
-
-Rules: no gi grips, each game under 60 seconds to explain, be specific and actionable.
-Game types: positional=top/bottom roles, constraintBased=restriction forces adaptation, gripEngagement=underhooks/wrist/inside ties, continuousFlow=chain of transitions, problemSolving=no instruction/explore freely, microGame=ultra-specific single detail, competitive=scoring format.`;
-
-      const text = await callClaude(prompt, 3, 1500);
+      const text = await callClaude(prompt, 3, 2048);
       let gameData;
-      try { gameData = JSON.parse(text); }
-      catch { const m = text.match(/\{[\s\S]*\}/); if (m) gameData = JSON.parse(m[0]); }
+      try {
+        gameData = JSON.parse(text);
+      } catch {
+        const m = text.match(/\{[\s\S]*\}/);
+        if (m) {
+          try { gameData = JSON.parse(m[0]); } catch (e2) {
+            console.error(`JSON parse failed for ${t.technique}:`, text.slice(0, 200));
+          }
+        } else {
+          console.error(`No JSON found for ${t.technique}:`, text.slice(0, 200));
+        }
+      }
 
       if (gameData) results[key] = gameData;
+      else {
+        errors++;
+        res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: 'Invalid JSON from Claude' })}\n\n`);
+        continue;
+      }
     } catch (err) {
       errors++;
       res.write(`data: ${JSON.stringify({ type: 'error', technique: t.technique, error: err.message })}\n\n`);
