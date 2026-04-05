@@ -1,0 +1,8 @@
+[phases.install]
+cmds = ["npm install", "cd backend && npm install"]
+
+[phases.build]
+cmds = ["BASE_PATH=/ VITE_BACKEND_URL= npm run build"]
+
+[start]
+cmd = "npm start"
