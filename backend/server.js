@@ -326,6 +326,14 @@ async function callClaude(prompt, retries = 3, maxTokens = 512) {
   throw new Error('Max retries exceeded');
 }
 
+// ─── Serve frontend (Railway deployment) ──────────────────────────────────────
+
+const distPath = join(__dirname, '..', 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res) => res.sendFile(join(distPath, 'index.html')));
+}
+
 // ─── Start ─────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3001;

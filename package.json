@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "build:railway": "BASE_PATH=/ VITE_BACKEND_URL= vite build",
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

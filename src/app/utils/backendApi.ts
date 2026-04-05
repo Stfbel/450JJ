@@ -1,5 +1,5 @@
-// Backend URL — calls Railway instead of YouTube/Claude directly
-export const BACKEND_URL = 'https://450jj-production.up.railway.app';
+// Backend URL — empty string when served from Railway (same origin), full URL for GitHub Pages
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'https://450jj-production.up.railway.app';
 
 export const isBackendConfigured = async (): Promise<boolean> => {
   try {
