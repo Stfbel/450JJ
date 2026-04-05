@@ -3,7 +3,7 @@ export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'https://450jj-pr
 
 export const isBackendConfigured = async (): Promise<boolean> => {
   try {
-    const res = await fetch(`${BACKEND_URL}/`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${BACKEND_URL}/api/health`, { signal: AbortSignal.timeout(3000) });
     const data = await res.json();
     return data.status === 'ok';
   } catch {

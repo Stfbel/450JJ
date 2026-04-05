@@ -67,7 +67,7 @@ app.get('/auth/callback', async (req, res) => {
 
 // ─── Health check ──────────────────────────────────────────────────────────────
 
-app.get('/', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: '450JJ Backend',
