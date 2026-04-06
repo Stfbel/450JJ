@@ -8,10 +8,12 @@ export interface Video {
 
 export interface GameVariant {
   setup: string;
-  objective: string;
+  top: string;
+  bottom: string;
   rules: string;
   coachCue: string;
   duration: string;
+  objective?: string; // legacy fallback
 }
 
 export type GameType =

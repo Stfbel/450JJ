@@ -36,13 +36,17 @@ function GameVariantDisplay({ variant }: { variant: GameVariant }) {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-sky-500/5 rounded-xl p-3 border border-sky-500/20">
-          <p className="text-[9px] text-sky-500 uppercase font-bold tracking-wider mb-1">Objective</p>
-          <p className="text-xs text-foreground leading-relaxed">{variant.objective}</p>
+          <p className="text-[9px] text-sky-500 uppercase font-bold tracking-wider mb-1">⬆ Top Player</p>
+          <p className="text-xs text-foreground leading-relaxed">{variant.top || variant.objective}</p>
         </div>
-        <div className="bg-violet-500/5 rounded-xl p-3 border border-violet-500/20">
-          <p className="text-[9px] text-violet-500 uppercase font-bold tracking-wider mb-1">Rules</p>
-          <p className="text-xs text-foreground leading-relaxed">{variant.rules}</p>
+        <div className="bg-orange-500/5 rounded-xl p-3 border border-orange-500/20">
+          <p className="text-[9px] text-orange-500 uppercase font-bold tracking-wider mb-1">⬇ Bottom Player</p>
+          <p className="text-xs text-foreground leading-relaxed">{variant.bottom}</p>
         </div>
+      </div>
+      <div className="bg-violet-500/5 rounded-xl p-3 border border-violet-500/20">
+        <p className="text-[9px] text-violet-500 uppercase font-bold tracking-wider mb-1">Rules</p>
+        <p className="text-xs text-foreground leading-relaxed">{variant.rules}</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl p-3 border border-accent/20">

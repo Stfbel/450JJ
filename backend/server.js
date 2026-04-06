@@ -210,12 +210,13 @@ app.post('/api/claude/generate-game', async (req, res) => {
   if (!CLAUDE_KEY) return res.status(500).json({ error: 'Claude API key not configured on server' });
 
   const prompt = `No-Gi BJJ. Technique: "${technique}" from "${position}". Level: ${level || 'Mixed'}.
-Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required:
-{"positional":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","objective":"","rules":"","coachCue":"","duration":""}}
+Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required.
+top = objective for the top/attacking player. bottom = objective for the bottom/defending player.
+{"positional":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""}}
 No gi grips. Be specific and actionable.`;
 
   try {
-    const text = await callClaude(prompt, 3, 2048);
+    const text = await callClaude(prompt, 3, 2500);
     try {
       res.json(JSON.parse(text));
     } catch {
@@ -255,11 +256,12 @@ app.post('/api/claude/generate-games-batch', async (req, res) => {
 
     try {
       const prompt = `No-Gi BJJ. Technique: "${t.technique}" from "${t.position}". Level: ${t.level || 'Mixed'}.
-Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required:
-{"positional":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","objective":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","objective":"","rules":"","coachCue":"","duration":""}}
+Output JSON only — no markdown, no explanation. Keep each value under 15 words. All 7 keys required.
+top = objective for the top/attacking player. bottom = objective for the bottom/defending player.
+{"positional":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""}}
 No gi grips. Be specific and actionable.`;
 
-      const text = await callClaude(prompt, 3, 2048);
+      const text = await callClaude(prompt, 3, 2500);
       let gameData;
       try {
         gameData = JSON.parse(text);
