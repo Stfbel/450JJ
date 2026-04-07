@@ -216,18 +216,10 @@ top = objective for the top/attacking player. bottom = objective for the bottom/
 No gi grips. Be specific and actionable.`;
 
   try {
-    const text = await callClaude(prompt, 3, 2500);
-    try {
-      res.json(JSON.parse(text));
-    } catch {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (match) {
-        try { res.json(JSON.parse(match[0])); }
-        catch { res.status(500).json({ error: 'Invalid JSON from Claude', raw: text.slice(0, 200) }); }
-      } else {
-        res.status(500).json({ error: 'Invalid JSON from Claude', raw: text.slice(0, 200) });
-      }
-    }
+    const text = await callClaude(prompt, 3, 3000);
+    const data = extractJSON(text);
+    if (data) res.json(data);
+    else res.status(500).json({ error: 'Invalid JSON from Claude', raw: text.slice(0, 200) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -261,20 +253,9 @@ top = objective for the top/attacking player. bottom = objective for the bottom/
 {"positional":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"constraintBased":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"gripEngagement":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"continuousFlow":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"problemSolving":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"microGame":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""},"competitive":{"setup":"","top":"","bottom":"","rules":"","coachCue":"","duration":""}}
 No gi grips. Be specific and actionable.`;
 
-      const text = await callClaude(prompt, 3, 2500);
-      let gameData;
-      try {
-        gameData = JSON.parse(text);
-      } catch {
-        const m = text.match(/\{[\s\S]*\}/);
-        if (m) {
-          try { gameData = JSON.parse(m[0]); } catch (e2) {
-            console.error(`JSON parse failed for ${t.technique}:`, text.slice(0, 200));
-          }
-        } else {
-          console.error(`No JSON found for ${t.technique}:`, text.slice(0, 200));
-        }
-      }
+      const text = await callClaude(prompt, 3, 3000);
+      const gameData = extractJSON(text);
+      if (!gameData) console.error(`JSON parse failed for ${t.technique}:`, text.slice(0, 200));
 
       if (gameData) results[key] = gameData;
       else {
@@ -293,6 +274,29 @@ No gi grips. Be specific and actionable.`;
   res.write(`data: ${JSON.stringify({ type: 'done', results, errors, total: techniques.length })}\n\n`);
   res.end();
 });
+
+// ─── JSON cleaner — strips markdown fences, fixes truncation ──────────────────
+
+function extractJSON(text) {
+  // Strip markdown code fences
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenced) text = fenced[1].trim();
+  // Try raw parse first
+  try { return JSON.parse(text); } catch {}
+  // Extract outermost {...}
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  let raw = match[0];
+  // Fix truncated JSON: remove trailing incomplete key/value and close all open braces
+  try { return JSON.parse(raw); } catch {
+    // Remove last incomplete entry and close
+    raw = raw.replace(/,\s*"[^"]*"\s*:\s*"[^"]*$/, '').replace(/,\s*"[^"]*"\s*:\s*$/, '');
+    const opens = (raw.match(/\{/g) || []).length;
+    const closes = (raw.match(/\}/g) || []).length;
+    raw += '}'.repeat(Math.max(0, opens - closes));
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+}
 
 // ─── Claude helper ─────────────────────────────────────────────────────────────
 
